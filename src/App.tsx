@@ -527,6 +527,8 @@ export default function BlueBeeApp() {
           Cont proprietar → Calendar → Sincronizare calendar → Export iCal → Copiază link
         </div>
       </div>
+      <div className="acard">
+        <div className="aaptname">📋 {t.bookings_list}</div>
         {bookings.length===0?<p style={{color:C.gray,fontSize:13}}>{t.no_bookings}</p>:<div style={{overflowX:'auto'}}><table className="btable"><thead><tr><th>#</th><th>Apt</th><th>Check-in</th><th>Check-out</th><th>Oaspete</th><th>Email</th><th>Total</th></tr></thead><tbody>{bookings.map((b,i)=><tr key={b.id}><td style={{color:C.gray}}>{i+1}</td><td><strong>{b.aptName}</strong></td><td>{b.checkin}</td><td>{b.checkout}</td><td>{b.name}</td><td style={{color:C.gray}}>{b.email}</td><td><strong>{b.total} RON</strong></td></tr>)}</tbody></table></div>}
       </div>
     </div></div>);
@@ -621,6 +623,7 @@ export default function BlueBeeApp() {
           </a>
         </div>
       </div>
+    </div>}
     {page==='apt1'&&<div className="fin"><Detail apt={apts[0]}/></div>}
     {page==='apt2'&&<div className="fin"><Detail apt={apts[1]}/></div>}
     {page==='admin'&&<div className="fin"><Admin/></div>}
@@ -638,4 +641,3 @@ export default function BlueBeeApp() {
     </footer>}
   </div>);
 }
- 
