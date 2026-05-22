@@ -403,7 +403,7 @@ export default function BlueBeeApp() {
   };
 
   const Detail=({apt}:{apt:Apt})=>{
-    const idx=galIdx[apt.id]||0,desc=apt.desc[lang]||apt.desc.ro,badge=(apt as Record<string,string>)[`badge_${lang}`]||apt.badge_ro;
+    const idx=galIdx[apt.id]||0,desc=apt.desc[lang]||apt.desc.ro,badge=(apt as unknown as Record<string,string>)[`badge_${lang}`]||apt.badge_ro;
     const wBk=bk.aptId===apt.id;
     const openBk=()=>{setCalMo([new Date().getFullYear(),new Date().getMonth()]);setBk({aptId:apt.id,checkin:null,checkout:null,step:1});};
     return(<div className="detail fin">
@@ -564,7 +564,7 @@ export default function BlueBeeApp() {
         <h2 className="stitle">{t.our_apts}</h2>
         <div className="grid">
           {apts.map(apt=>{
-            const badge=(apt as Record<string,string>)[`badge_${lang}`]||apt.badge_ro,desc=apt.desc[lang]||apt.desc.ro;
+            const badge=(apt as unknown as Record<string,string>)[`badge_${lang}`]||apt.badge_ro,desc=apt.desc[lang]||apt.desc.ro;
             return(<div key={apt.id} className="card">
               <div className="cimgw"><img className="cimg" src={apt.photos[0]||''} alt={apt.name}/><div className="cbadge">{badge}</div></div>
               <div className="cbody">
