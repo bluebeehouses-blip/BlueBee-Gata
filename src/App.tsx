@@ -1,27 +1,52 @@
 import { useState, useEffect } from "react";
 
 const C = { navy:"#0D1B2A", navy2:"#162436", gold:"#C4973A", gold2:"#D4A94A", cream:"#FAF7F2", cream2:"#F2EBE0", gray:"#7A7470", gray2:"#AFA8A0", border:"#E8E0D5" };
-const AM_ICONS: Record<string,string> = { wifi:"📶", ac:"❄️", tv:"📺", parking:"🚗", kitchen:"🍳", washer:"🫧", balcony:"🌅" };
+const AM_ICONS: Record<string,string> = {
+  // Conectivitate & Divertisment
+  wifi:"📶", tv:"📺", netflix:"🎬", bluetooth:"🔊", phone:"📞",
+  // Climatizare & Confort
+  ac:"❄️", heating:"🔥", fireplace:"🪵", fan:"🌀", humidifier:"💧",
+  // Bucătărie & Aparate
+  kitchen:"🍳", fridge:"🧊", microwave:"📡", kettle:"☕", coffee:"☕",
+  dishwasher:"🍽️", toaster:"🍞", oven:"🫕", blender:"🥤", wine_fridge:"🍷",
+  // Baie & Îngrijire
+  bathrobe:"🥼", slippers:"🩴", towels:"🛁", hairdryer:"💨", iron:"👔",
+  toiletries:"🧴", jacuzzi:"🛁", shower:"🚿",
+  // Spălătorie
+  washer:"🫧", dryer:"🌀", ironing_board:"👕",
+  // Transport & Parcare
+  parking:"🚗", ev_charger:"⚡", bike:"🚲", airport_shuttle:"🚌",
+  // Facilități clădire
+  elevator:"🛗", pool:"🏊", gym:"💪", sauna:"🧖", garden:"🌿",
+  bbq:"🍖", terrace:"☀️", playground:"🛝", storage:"📦",
+  // Servicii
+  breakfast:"🥐", room_service:"🛎️", concierge:"🎩", safe:"🔒",
+  desk:"💼", crib:"👶", pets:"🐾", smoking_outside:"🚭",
+  // Acces & Securitate
+  self_checkin:"🔑", cctv:"📷", fire_extinguisher:"🧯", first_aid:"🩺"
+};
 const ALL_AM = Object.keys(AM_ICONS);
 const ADMIN_PASS = "BlueBee2024";
-const CONTACT0 = { phone:"+40 700 000 000", whatsapp:"+40 700 000 000", email:"contact@bluebeeapartments.ro", address:"Str. Exemplu, Nr. 1, Oraș, România" };
+const CONTACT0 = { phone:"+40 700 000 000", whatsapp:"+40 700 000 000", email:"contact@bluebeeapartments.ro", address:"Bulevardul Eroilor, Orăștie, 335700" };
 
 const APTS0 = [
-  { id:1, name:"BlueBee Hive", badge_ro:"Cu bucătărie", badge_en:"With kitchen", badge_fr:"Avec cuisine", badge_it:"Con cucina", price:350, maxGuests:4,
+  { id:1, name:"BlueBee Hive", badge_ro:"Cu bucătărie", badge_en:"With kitchen", badge_fr:"Avec cuisine", badge_it:"Con cucina", price:270, maxGuests:5,
+    priceTiers:[{guests:2,price:270},{guests:4,price:370},{guests:5,price:400}],
     desc:{ ro:"Apartament elegant cu dormitor, living spațios, baie modernă și bucătărie complet utilată. Perfect pentru sejururi prelungite sau familii care doresc confortul unui acasă departe de casă.", en:"Elegant apartment with bedroom, spacious living room, modern bathroom and fully equipped kitchen. Perfect for extended stays or families.", fr:"Appartement élégant avec chambre, grand salon, salle de bain moderne et cuisine entièrement équipée. Idéal pour les familles.", it:"Appartamento elegante con camera, ampio soggiorno, bagno moderno e cucina attrezzata. Perfetto per soggiorni prolungati." },
-    amenities:["wifi","ac","tv","parking","kitchen","washer"],
+    amenities:["wifi","ac","tv","parking","kitchen","washer","fridge","microwave","kettle","coffee","bathrobe","slippers","hairdryer","towels"],
     photos:["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=900&q=80","https://images.unsplash.com/photo-1484154218962-a197022b5858?w=900&q=80","https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80"] },
-  { id:2, name:"BlueBee Nest", badge_ro:"Fără bucătărie", badge_en:"Without kitchen", badge_fr:"Sans cuisine", badge_it:"Senza cucina", price:250, maxGuests:3,
+  { id:2, name:"BlueBee Nest", badge_ro:"Fără bucătărie", badge_en:"Without kitchen", badge_fr:"Sans cuisine", badge_it:"Senza cucina", price:250, maxGuests:4,
+    priceTiers:[{guests:2,price:250},{guests:4,price:350}],
     desc:{ ro:"Apartament modern cu dormitor, living confortabil și baie elegantă. Ideal pentru city breaks și escapade de weekend în care contează fiecare detaliu.", en:"Modern apartment with bedroom, comfortable living room and elegant bathroom. Ideal for city breaks and weekend getaways.", fr:"Appartement moderne avec chambre, salon élégant et salle de bain bien équipée. Idéal pour les escapades.", it:"Appartamento moderno con camera, soggiorno elegante e bagno ben attrezzato. Ideale per city break." },
-    amenities:["wifi","ac","tv","parking","washer"],
+    amenities:["wifi","ac","tv","parking","washer","fridge","kettle","bathrobe","slippers","hairdryer","towels"],
     photos:["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=80","https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=80","https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=900&q=80"] }
 ];
 
 const TXT: Record<string, Record<string,string>> = {
-  ro:{ home:"Acasă",apts:"Apartamente",contact:"Contact",book:"Rezervă",hero_sub:"Cazare elegantă în inima orașului",discover:"Descoperă",book_now:"Rezervă Acum",our_apts:"Apartamentele Noastre",from:"de la",per_night:"/ noapte",details:"Detalii",book_apt:"Rezervă",checkin:"Check-in",checkout:"Check-out",guests:"Oaspeți",total:"Total",nights:"nopți",night:"noapte",confirm:"Confirmă și Plătește",select_dates:"Selectează datele",ci_time:"Check-in: ora 15:00",co_time:"Check-out: ora 10:00",min_stay:"Sejur minim: 1 noapte",full_name:"Nume complet",email:"Email",phone:"Telefon / WhatsApp",payment:"Plată Securizată",card_nr:"Număr card",expiry:"LL/AA",cvc:"CVC",pay:"Plătește",success_title:"Rezervare Confirmată!",success_msg:"Vei primi un email de confirmare în scurt timp.",contact_us:"Contactează-ne",contact_sub:"Suntem la dispoziția ta",back:"← Înapoi",max_g:"Max.",g_unit:"oaspeți",bedroom:"Dormitor",living:"Living",bathroom:"Baie",kitchen_lbl:"Bucătărie",admin_title:"Panou Administrator",admin_pass:"Parolă",admin_login:"Autentificare",admin_wrong:"Parolă incorectă",admin_logout:"Deconectare",apt_name:"Nume apartament",price_night:"Preț / noapte (RON)",description:"Descriere",photos:"Fotografii",add_photo:"+ Adaugă fotografie",photo_url:"URL fotografie...",save:"Salvează",saved:"✓ Salvat!",bookings_list:"Rezervări",no_bookings:"Nu există rezervări încă",amenities_lbl:"Facilități",contact_edit:"Informații de contact",phone_lbl:"Telefon",email_lbl:"Email",addr_lbl:"Adresă",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_ac:"Aer Condiționat",a_tv:"Smart TV",a_parking:"Parcare",a_kitchen:"Bucătărie",a_washer:"Mașină de spălat",a_balcony:"Balcon" },
-  en:{ home:"Home",apts:"Apartments",contact:"Contact",book:"Book",hero_sub:"Elegant accommodation in the heart of the city",discover:"Discover",book_now:"Book Now",our_apts:"Our Apartments",from:"from",per_night:"/ night",details:"Details",book_apt:"Book",checkin:"Check-in",checkout:"Check-out",guests:"Guests",total:"Total",nights:"nights",night:"night",confirm:"Confirm & Pay",select_dates:"Select dates",ci_time:"Check-in: 3:00 PM",co_time:"Check-out: 10:00 AM",min_stay:"Minimum stay: 1 night",full_name:"Full name",email:"Email",phone:"Phone / WhatsApp",payment:"Secure Payment",card_nr:"Card number",expiry:"MM/YY",cvc:"CVC",pay:"Pay",success_title:"Booking Confirmed!",success_msg:"You will receive a confirmation email shortly.",contact_us:"Contact Us",contact_sub:"We are here for you",back:"← Back",max_g:"Max.",g_unit:"guests",bedroom:"Bedroom",living:"Living room",bathroom:"Bathroom",kitchen_lbl:"Kitchen",admin_title:"Admin Panel",admin_pass:"Password",admin_login:"Login",admin_wrong:"Incorrect password",admin_logout:"Logout",apt_name:"Apartment name",price_night:"Price / night (RON)",description:"Description",photos:"Photos",add_photo:"+ Add photo",photo_url:"Photo URL...",save:"Save",saved:"✓ Saved!",bookings_list:"Bookings",no_bookings:"No bookings yet",amenities_lbl:"Amenities",contact_edit:"Contact information",phone_lbl:"Phone",email_lbl:"Email",addr_lbl:"Address",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_ac:"Air Conditioning",a_tv:"Smart TV",a_parking:"Parking",a_kitchen:"Kitchen",a_washer:"Washing Machine",a_balcony:"Balcony" },
-  fr:{ home:"Accueil",apts:"Appartements",contact:"Contact",book:"Réserver",hero_sub:"Hébergement élégant au cœur de la ville",discover:"Découvrir",book_now:"Réserver",our_apts:"Nos Appartements",from:"à partir de",per_night:"/ nuit",details:"Détails",book_apt:"Réserver",checkin:"Arrivée",checkout:"Départ",guests:"Voyageurs",total:"Total",nights:"nuits",night:"nuit",confirm:"Confirmer et Payer",select_dates:"Sélectionner les dates",ci_time:"Arrivée: 15h00",co_time:"Départ: 10h00",min_stay:"Séjour minimum: 1 nuit",full_name:"Nom complet",email:"Email",phone:"Téléphone / WhatsApp",payment:"Paiement Sécurisé",card_nr:"Numéro de carte",expiry:"MM/AA",cvc:"CVC",pay:"Payer",success_title:"Réservation Confirmée!",success_msg:"Vous recevrez un email de confirmation.",contact_us:"Nous Contacter",contact_sub:"Nous sommes à votre disposition",back:"← Retour",max_g:"Max.",g_unit:"voyageurs",bedroom:"Chambre",living:"Salon",bathroom:"Salle de bain",kitchen_lbl:"Cuisine",admin_title:"Panneau Admin",admin_pass:"Mot de passe",admin_login:"Connexion",admin_wrong:"Mot de passe incorrect",admin_logout:"Déconnexion",apt_name:"Nom de l'appartement",price_night:"Prix / nuit (RON)",description:"Description",photos:"Photos",add_photo:"+ Ajouter une photo",photo_url:"URL de la photo...",save:"Enregistrer",saved:"✓ Sauvegardé!",bookings_list:"Réservations",no_bookings:"Aucune réservation",amenities_lbl:"Équipements",contact_edit:"Informations de contact",phone_lbl:"Téléphone",email_lbl:"Email",addr_lbl:"Adresse",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_ac:"Climatisation",a_tv:"Smart TV",a_parking:"Parking",a_kitchen:"Cuisine",a_washer:"Lave-linge",a_balcony:"Balcon" },
-  it:{ home:"Home",apts:"Appartamenti",contact:"Contatti",book:"Prenota",hero_sub:"Alloggio elegante nel cuore della città",discover:"Scopri",book_now:"Prenota Ora",our_apts:"I Nostri Appartamenti",from:"da",per_night:"/ notte",details:"Dettagli",book_apt:"Prenota",checkin:"Check-in",checkout:"Check-out",guests:"Ospiti",total:"Totale",nights:"notti",night:"notte",confirm:"Conferma e Paga",select_dates:"Seleziona le date",ci_time:"Check-in: 15:00",co_time:"Check-out: 10:00",min_stay:"Soggiorno minimo: 1 notte",full_name:"Nome completo",email:"Email",phone:"Telefono / WhatsApp",payment:"Pagamento Sicuro",card_nr:"Numero carta",expiry:"MM/AA",cvc:"CVC",pay:"Paga",success_title:"Prenotazione Confermata!",success_msg:"Riceverai un'email di conferma a breve.",contact_us:"Contattaci",contact_sub:"Siamo a tua disposizione",back:"← Indietro",max_g:"Max.",g_unit:"ospiti",bedroom:"Camera da letto",living:"Soggiorno",bathroom:"Bagno",kitchen_lbl:"Cucina",admin_title:"Pannello Admin",admin_pass:"Password",admin_login:"Accedi",admin_wrong:"Password errata",admin_logout:"Esci",apt_name:"Nome appartamento",price_night:"Prezzo / notte (RON)",description:"Descrizione",photos:"Foto",add_photo:"+ Aggiungi foto",photo_url:"URL foto...",save:"Salva",saved:"✓ Salvato!",bookings_list:"Prenotazioni",no_bookings:"Nessuna prenotazione",amenities_lbl:"Servizi",contact_edit:"Informazioni di contatto",phone_lbl:"Telefono",email_lbl:"Email",addr_lbl:"Indirizzo",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_ac:"Aria Condizionata",a_tv:"Smart TV",a_parking:"Parcheggio",a_kitchen:"Cucina",a_washer:"Lavatrice",a_balcony:"Balcone" }
+  ro:{ home:"Acasă",apts:"Apartamente",contact:"Contact",book:"Rezervă",hero_sub:"Cazare elegantă în inima orașului",discover:"Descoperă",book_now:"Rezervă Acum",our_apts:"Apartamentele Noastre",from:"de la",per_night:"/ noapte",details:"Detalii",book_apt:"Rezervă",checkin:"Check-in",checkout:"Check-out",guests:"Oaspeți",total:"Total",nights:"nopți",night:"noapte",confirm:"Confirmă și Plătește",select_dates:"Selectează datele",ci_time:"Check-in: ora 15:00",co_time:"Check-out: ora 10:00",min_stay:"Sejur minim: 1 noapte",full_name:"Nume complet",email:"Email",phone:"Telefon / WhatsApp",payment:"Plată Securizată",card_nr:"Număr card",expiry:"LL/AA",cvc:"CVC",pay:"Plătește",success_title:"Rezervare Confirmată!",success_msg:"Vei primi un email de confirmare în scurt timp.",contact_us:"Contactează-ne",contact_sub:"Suntem la dispoziția ta",back:"← Înapoi",max_g:"Max.",g_unit:"oaspeți",bedroom:"Dormitor",living:"Living",bathroom:"Baie",kitchen_lbl:"Bucătărie",admin_title:"Panou Administrator",admin_pass:"Parolă",admin_login:"Autentificare",admin_wrong:"Parolă incorectă",admin_logout:"Deconectare",apt_name:"Nume apartament",price_night:"Preț / noapte (RON)",description:"Descriere",photos:"Fotografii",add_photo:"+ Adaugă fotografie",photo_url:"URL fotografie...",save:"Salvează",saved:"✓ Salvat!",bookings_list:"Rezervări",no_bookings:"Nu există rezervări încă",amenities_lbl:"Facilități",contact_edit:"Informații de contact",phone_lbl:"Telefon",email_lbl:"Email",addr_lbl:"Adresă",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Boxă Bluetooth",a_phone:"Telefon fix",a_ac:"Aer Condiționat",a_heating:"Încălzire",a_fireplace:"Șemineu",a_fan:"Ventilator",a_humidifier:"Umidificator",a_kitchen:"Bucătărie",a_fridge:"Frigider",a_microwave:"Cuptor microunde",a_kettle:"Fierbător apă",a_coffee:"Espressor",a_dishwasher:"Mașină de vase",a_toaster:"Toaster",a_oven:"Cuptor",a_blender:"Blender",a_wine_fridge:"Frigider vinuri",a_bathrobe:"Halat de baie",a_slippers:"Papuci de casă",a_towels:"Prosoape",a_hairdryer:"Uscător de păr",a_iron:"Fier de călcat",a_toiletries:"Articole toaletă",a_jacuzzi:"Jacuzzi",a_shower:"Duș",a_washer:"Mașină de spălat",a_dryer:"Uscător rufe",a_ironing_board:"Masă de călcat",a_parking:"Parcare",a_ev_charger:"Încărcare mașini electrice",a_bike:"Biciclete",a_airport_shuttle:"Transfer aeroport",a_elevator:"Lift",a_pool:"Piscină",a_gym:"Sală fitness",a_sauna:"Saună",a_garden:"Grădină",a_bbq:"Grătar",a_terrace:"Terasă",a_playground:"Loc de joacă",a_storage:"Depozitare bagaje",a_breakfast:"Mic dejun inclus",a_room_service:"Room service",a_concierge:"Concierge",a_safe:"Seif",a_desk:"Birou de lucru",a_crib:"Pătuț copil",a_pets:"Animale acceptate",a_smoking_outside:"Fumat permis afară",a_self_checkin:"Check-in autonom",a_cctv:"Camere securitate",a_fire_extinguisher:"Stingător incendiu",a_first_aid:"Trusă prim ajutor" },
+  en:{ home:"Home",apts:"Apartments",contact:"Contact",book:"Book",hero_sub:"Elegant accommodation in the heart of the city",discover:"Discover",book_now:"Book Now",our_apts:"Our Apartments",from:"from",per_night:"/ night",details:"Details",book_apt:"Book",checkin:"Check-in",checkout:"Check-out",guests:"Guests",total:"Total",nights:"nights",night:"night",confirm:"Confirm & Pay",select_dates:"Select dates",ci_time:"Check-in: 3:00 PM",co_time:"Check-out: 10:00 AM",min_stay:"Minimum stay: 1 night",full_name:"Full name",email:"Email",phone:"Phone / WhatsApp",payment:"Secure Payment",card_nr:"Card number",expiry:"MM/YY",cvc:"CVC",pay:"Pay",success_title:"Booking Confirmed!",success_msg:"You will receive a confirmation email shortly.",contact_us:"Contact Us",contact_sub:"We are here for you",back:"← Back",max_g:"Max.",g_unit:"guests",bedroom:"Bedroom",living:"Living room",bathroom:"Bathroom",kitchen_lbl:"Kitchen",admin_title:"Admin Panel",admin_pass:"Password",admin_login:"Login",admin_wrong:"Incorrect password",admin_logout:"Logout",apt_name:"Apartment name",price_night:"Price / night (RON)",description:"Description",photos:"Photos",add_photo:"+ Add photo",photo_url:"Photo URL...",save:"Save",saved:"✓ Saved!",bookings_list:"Bookings",no_bookings:"No bookings yet",amenities_lbl:"Amenities",contact_edit:"Contact information",phone_lbl:"Phone",email_lbl:"Email",addr_lbl:"Address",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Bluetooth Speaker",a_phone:"Landline Phone",a_ac:"Air Conditioning",a_heating:"Heating",a_fireplace:"Fireplace",a_fan:"Fan",a_humidifier:"Humidifier",a_kitchen:"Kitchen",a_fridge:"Fridge",a_microwave:"Microwave",a_kettle:"Kettle",a_coffee:"Espresso Machine",a_dishwasher:"Dishwasher",a_toaster:"Toaster",a_oven:"Oven",a_blender:"Blender",a_wine_fridge:"Wine Fridge",a_bathrobe:"Bathrobe",a_slippers:"Slippers",a_towels:"Towels",a_hairdryer:"Hair Dryer",a_iron:"Iron",a_toiletries:"Toiletries",a_jacuzzi:"Jacuzzi",a_shower:"Shower",a_washer:"Washing Machine",a_dryer:"Dryer",a_ironing_board:"Ironing Board",a_parking:"Parking",a_ev_charger:"EV Charger",a_bike:"Bikes",a_airport_shuttle:"Airport Shuttle",a_elevator:"Elevator",a_pool:"Pool",a_gym:"Gym",a_sauna:"Sauna",a_garden:"Garden",a_bbq:"BBQ",a_terrace:"Terrace",a_playground:"Playground",a_storage:"Luggage Storage",a_breakfast:"Breakfast Included",a_room_service:"Room Service",a_concierge:"Concierge",a_safe:"Safe",a_desk:"Work Desk",a_crib:"Baby Crib",a_pets:"Pets Allowed",a_smoking_outside:"Smoking Outside",a_self_checkin:"Self Check-in",a_cctv:"CCTV",a_fire_extinguisher:"Fire Extinguisher",a_first_aid:"First Aid Kit" },
+  fr:{ home:"Accueil",apts:"Appartements",contact:"Contact",book:"Réserver",hero_sub:"Hébergement élégant au cœur de la ville",discover:"Découvrir",book_now:"Réserver",our_apts:"Nos Appartements",from:"à partir de",per_night:"/ nuit",details:"Détails",book_apt:"Réserver",checkin:"Arrivée",checkout:"Départ",guests:"Voyageurs",total:"Total",nights:"nuits",night:"nuit",confirm:"Confirmer et Payer",select_dates:"Sélectionner les dates",ci_time:"Arrivée: 15h00",co_time:"Départ: 10h00",min_stay:"Séjour minimum: 1 nuit",full_name:"Nom complet",email:"Email",phone:"Téléphone / WhatsApp",payment:"Paiement Sécurisé",card_nr:"Numéro de carte",expiry:"MM/AA",cvc:"CVC",pay:"Payer",success_title:"Réservation Confirmée!",success_msg:"Vous recevrez un email de confirmation.",contact_us:"Nous Contacter",contact_sub:"Nous sommes à votre disposition",back:"← Retour",max_g:"Max.",g_unit:"voyageurs",bedroom:"Chambre",living:"Salon",bathroom:"Salle de bain",kitchen_lbl:"Cuisine",admin_title:"Panneau Admin",admin_pass:"Mot de passe",admin_login:"Connexion",admin_wrong:"Mot de passe incorrect",admin_logout:"Déconnexion",apt_name:"Nom de l'appartement",price_night:"Prix / nuit (RON)",description:"Description",photos:"Photos",add_photo:"+ Ajouter une photo",photo_url:"URL de la photo...",save:"Enregistrer",saved:"✓ Sauvegardé!",bookings_list:"Réservations",no_bookings:"Aucune réservation",amenities_lbl:"Équipements",contact_edit:"Informations de contact",phone_lbl:"Téléphone",email_lbl:"Email",addr_lbl:"Adresse",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Enceinte Bluetooth",a_phone:"Téléphone fixe",a_ac:"Climatisation",a_heating:"Chauffage",a_fireplace:"Cheminée",a_fan:"Ventilateur",a_humidifier:"Humidificateur",a_kitchen:"Cuisine",a_fridge:"Réfrigérateur",a_microwave:"Micro-ondes",a_kettle:"Bouilloire",a_coffee:"Machine à café",a_dishwasher:"Lave-vaisselle",a_toaster:"Grille-pain",a_oven:"Four",a_blender:"Mixeur",a_wine_fridge:"Cave à vins",a_bathrobe:"Peignoir",a_slippers:"Chaussons",a_towels:"Serviettes",a_hairdryer:"Sèche-cheveux",a_iron:"Fer à repasser",a_toiletries:"Articles de toilette",a_jacuzzi:"Jacuzzi",a_shower:"Douche",a_washer:"Lave-linge",a_dryer:"Sèche-linge",a_ironing_board:"Planche à repasser",a_parking:"Parking",a_ev_charger:"Borne électrique",a_bike:"Vélos",a_airport_shuttle:"Navette aéroport",a_elevator:"Ascenseur",a_pool:"Piscine",a_gym:"Salle de sport",a_sauna:"Sauna",a_garden:"Jardin",a_bbq:"Barbecue",a_terrace:"Terrasse",a_playground:"Aire de jeux",a_storage:"Consigne bagages",a_breakfast:"Petit-déjeuner inclus",a_room_service:"Service en chambre",a_concierge:"Conciergerie",a_safe:"Coffre-fort",a_desk:"Bureau",a_crib:"Lit bébé",a_pets:"Animaux acceptés",a_smoking_outside:"Fumeurs dehors",a_self_checkin:"Arrivée autonome",a_cctv:"Vidéosurveillance",a_fire_extinguisher:"Extincteur",a_first_aid:"Trousse de secours" },
+  it:{ home:"Home",apts:"Appartamenti",contact:"Contatti",book:"Prenota",hero_sub:"Alloggio elegante nel cuore della città",discover:"Scopri",book_now:"Prenota Ora",our_apts:"I Nostri Appartamenti",from:"da",per_night:"/ notte",details:"Dettagli",book_apt:"Prenota",checkin:"Check-in",checkout:"Check-out",guests:"Ospiti",total:"Totale",nights:"notti",night:"notte",confirm:"Conferma e Paga",select_dates:"Seleziona le date",ci_time:"Check-in: 15:00",co_time:"Check-out: 10:00",min_stay:"Soggiorno minimo: 1 notte",full_name:"Nome completo",email:"Email",phone:"Telefono / WhatsApp",payment:"Pagamento Sicuro",card_nr:"Numero carta",expiry:"MM/AA",cvc:"CVC",pay:"Paga",success_title:"Prenotazione Confermata!",success_msg:"Riceverai un'email di conferma a breve.",contact_us:"Contattaci",contact_sub:"Siamo a tua disposizione",back:"← Indietro",max_g:"Max.",g_unit:"ospiti",bedroom:"Camera da letto",living:"Soggiorno",bathroom:"Bagno",kitchen_lbl:"Cucina",admin_title:"Pannello Admin",admin_pass:"Password",admin_login:"Accedi",admin_wrong:"Password errata",admin_logout:"Esci",apt_name:"Nome appartamento",price_night:"Prezzo / notte (RON)",description:"Descrizione",photos:"Foto",add_photo:"+ Aggiungi foto",photo_url:"URL foto...",save:"Salva",saved:"✓ Salvato!",bookings_list:"Prenotazioni",no_bookings:"Nessuna prenotazione",amenities_lbl:"Servizi",contact_edit:"Informazioni di contatto",phone_lbl:"Telefono",email_lbl:"Email",addr_lbl:"Indirizzo",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Cassa Bluetooth",a_phone:"Telefono fisso",a_ac:"Aria Condizionata",a_heating:"Riscaldamento",a_fireplace:"Camino",a_fan:"Ventilatore",a_humidifier:"Umidificatore",a_kitchen:"Cucina",a_fridge:"Frigorifero",a_microwave:"Microonde",a_kettle:"Bollitore",a_coffee:"Macchina caffè",a_dishwasher:"Lavastoviglie",a_toaster:"Tostapane",a_oven:"Forno",a_blender:"Frullatore",a_wine_fridge:"Cantinetta vini",a_bathrobe:"Accappatoio",a_slippers:"Pantofole",a_towels:"Asciugamani",a_hairdryer:"Asciugacapelli",a_iron:"Ferro da stiro",a_toiletries:"Articoli da toilette",a_jacuzzi:"Jacuzzi",a_shower:"Doccia",a_washer:"Lavatrice",a_dryer:"Asciugatrice",a_ironing_board:"Asse da stiro",a_parking:"Parcheggio",a_ev_charger:"Ricarica elettrica",a_bike:"Biciclette",a_airport_shuttle:"Navetta aeroporto",a_elevator:"Ascensore",a_pool:"Piscina",a_gym:"Palestra",a_sauna:"Sauna",a_garden:"Giardino",a_bbq:"Barbecue",a_terrace:"Terrazza",a_playground:"Area giochi",a_storage:"Deposito bagagli",a_breakfast:"Colazione inclusa",a_room_service:"Servizio in camera",a_concierge:"Concierge",a_safe:"Cassaforte",a_desk:"Scrivania",a_crib:"Culla",a_pets:"Animali ammessi",a_smoking_outside:"Fumatori fuori",a_self_checkin:"Check-in autonomo",a_cctv:"Videosorveglianza",a_fire_extinguisher:"Estintore",a_first_aid:"Kit pronto soccorso" }
 };
 
 const toStr = (d: Date) => d.toISOString().split('T')[0];
@@ -29,6 +54,11 @@ const todayStr = () => toStr(new Date());
 const addDays = (s: string, n: number) => { const d=new Date(s); d.setDate(d.getDate()+n); return toStr(d); };
 const diffDays = (a: string, b: string) => Math.round((new Date(b).getTime()-new Date(a).getTime())/86400000);
 const fmtDate = (s: string) => new Date(s).toLocaleDateString('ro-RO',{day:'2-digit',month:'short',year:'numeric'});
+const getPriceForGuests = (apt: Apt, guests: number) => {
+  if(!apt.priceTiers||apt.priceTiers.length===0) return apt.price;
+  const tier = apt.priceTiers.find(t=>guests<=t.guests);
+  return tier ? tier.price : apt.priceTiers[apt.priceTiers.length-1].price;
+};
 const MONTHS = ['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'];
 
 const BbLogo = ({size=44}:{size?:number}) => (
@@ -223,19 +253,54 @@ const CSS = `
 .infosumm{background:var(--cream);padding:10px 14px;margin-bottom:20px;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;border-radius:10px}
 .addphoto{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border:1.5px dashed var(--gold);color:var(--gold);font-size:11px;background:none;cursor:pointer;font-family:'Jost',sans-serif;transition:all .2s;border-radius:9px}
 .addphoto:hover{background:rgba(196,151,58,.06)}
-@keyframes fi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.fin{animation:fi .5s ease forwards}
+@keyframes fi{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.fin{animation:fi .7s cubic-bezier(0.22,1,0.36,1) forwards}
+@keyframes fadeOnly{from{opacity:0}to{opacity:1}}
+.fade{animation:fadeOnly .5s ease forwards}
 @media(max-width:860px){.dbody{grid-template-columns:1fr}.widget{position:static}.grid{grid-template-columns:1fr}.cgrid{grid-template-columns:repeat(2,1fr)}.navr{gap:12px}}
 @media(max-width:600px){.sec{padding:56px 18px}.nav{padding:0 16px}.ht{font-size:44px}.hbtns{flex-direction:column;align-items:center}.cgrid{grid-template-columns:1fr}}
 `;
 
-interface Apt { id:number; name:string; badge_ro:string; badge_en:string; badge_fr:string; badge_it:string; price:number; maxGuests:number; desc:Record<string,string>; amenities:string[]; photos:string[]; }
+interface PriceTier { guests:number; price:number; }
+interface Apt { id:number; name:string; badge_ro:string; badge_en:string; badge_fr:string; badge_it:string; price:number; maxGuests:number; priceTiers:PriceTier[]; desc:Record<string,string>; amenities:string[]; photos:string[]; }
 interface Bk { aptId:number|null; checkin:string|null; checkout:string|null; step:number; }
 interface Guest { name:string; email:string; phone:string; guests:number; }
 interface Booking { id:number; aptId:number|null; aptName:string; checkin:string|null; checkout:string|null; name:string; email:string; phone:string; guests:number; total:number; date:string; }
 interface Contact { phone:string; whatsapp:string; email:string; address:string; }
 
+const SITE_PASS = "Bluebee421993";
+
 export default function BlueBeeApp() {
+  const [siteUnlocked, setSiteUnlocked] = useState(() => {
+    try { return localStorage.getItem('bb_site_unlocked') === '1'; } catch(e) { return false; }
+  });
+  const [sitePass, setSitePass] = useState("");
+  const [siteErr, setSiteErr] = useState(false);
+
+  if(!siteUnlocked) return (
+    <div style={{minHeight:'100vh',background:'linear-gradient(150deg,#0D1B2A 0%,#1a3a5c 100%)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'Jost,sans-serif'}}>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Jost:wght@300;400;500&display=swap');</style>
+      <div style={{background:'#fff',borderRadius:22,padding:'50px 44px',width:'100%',maxWidth:360,textAlign:'center',boxShadow:'0 30px 80px rgba(0,0,0,.3)'}}>
+        <div style={{display:'flex',justifyContent:'center',marginBottom:14}}>
+          <BbLogo size={72}/>
+        </div>
+        <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:28,color:'#0D1B2A',marginBottom:5}}>Blue<span style={{color:'#C4973A'}}>Bee</span></div>
+        <div style={{fontSize:10,letterSpacing:2,color:'#AFA8A0',textTransform:'uppercase',marginBottom:30}}>Site în construcție</div>
+        <input
+          style={{width:'100%',border:`1.5px solid ${siteErr?'#ef4444':'#E8E0D5'}`,padding:'12px 15px',fontSize:14,outline:'none',marginBottom:10,textAlign:'center',fontFamily:'Jost,sans-serif',borderRadius:9,background:'#FAF7F2'}}
+          type="password" placeholder="Parolă" value={sitePass} autoFocus
+          onChange={e=>{setSitePass(e.target.value);setSiteErr(false);}}
+          onKeyDown={e=>{if(e.key==='Enter'){if(sitePass===SITE_PASS){localStorage.setItem('bb_site_unlocked','1');setSiteUnlocked(true);}else setSiteErr(true);}}}
+        />
+        {siteErr&&<div style={{color:'#ef4444',fontSize:12,marginBottom:8}}>Parolă incorectă</div>}
+        <button
+          style={{background:'linear-gradient(135deg,#C4973A,#D4A94A)',color:'#fff',border:'none',padding:'12px 26px',fontSize:10,letterSpacing:1.5,textTransform:'uppercase',cursor:'pointer',fontFamily:'Jost,sans-serif',borderRadius:22,width:'100%',marginTop:4}}
+          onClick={()=>{if(sitePass===SITE_PASS){localStorage.setItem('bb_site_unlocked','1');setSiteUnlocked(true);}else setSiteErr(true);}}>
+          Intră
+        </button>
+      </div>
+    </div>
+  );
   const [lang,setLang]=useState("ro");
   const [page,setPage]=useState("home");
   const [apts,setApts]=useState<Apt[]>(APTS0);
@@ -253,7 +318,8 @@ export default function BlueBeeApp() {
   const t=TXT[lang];
   const bkApt=bk.aptId?apts.find(a=>a.id===bk.aptId):null;
   const nights=bk.checkin&&bk.checkout?diffDays(bk.checkin,bk.checkout):0;
-  const total=bkApt?nights*bkApt.price:0;
+  const pricePerNight=bkApt?getPriceForGuests(bkApt,guest.guests):0;
+  const total=pricePerNight*nights;
 
   useEffect(()=>{
     const r1=lsGet('bb_apts'); if(r1) setApts(JSON.parse(r1));
@@ -337,7 +403,7 @@ export default function BlueBeeApp() {
   };
 
   const Detail=({apt}:{apt:Apt})=>{
-    const idx=galIdx[apt.id]||0,desc=apt.desc[lang]||apt.desc.ro,badge=(apt as unknown as Record<string,string>)[`badge_${lang}`]||apt.badge_ro;
+    const idx=galIdx[apt.id]||0,desc=apt.desc[lang]||apt.desc.ro,badge=(apt as Record<string,string>)[`badge_${lang}`]||apt.badge_ro;
     const wBk=bk.aptId===apt.id;
     const openBk=()=>{setCalMo([new Date().getFullYear(),new Date().getMonth()]);setBk({aptId:apt.id,checkin:null,checkout:null,step:1});};
     return(<div className="detail fin">
@@ -359,7 +425,15 @@ export default function BlueBeeApp() {
         </div>
         <div>
           <div className="widget">
-            <div className="wprice">{apt.price} RON<span> {t.per_night}</span></div>
+            <div className="wprice">{pricePerNight} RON<span> {t.per_night}</span></div>
+            {bkApt&&bkApt.priceTiers&&bkApt.priceTiers.length>0&&(
+              <div style={{fontSize:11,color:'var(--gray)',marginBottom:8,lineHeight:1.7}}>
+                {bkApt.priceTiers.map((tier,i)=>{
+                  const prev=i===0?1:bkApt.priceTiers[i-1].guests+1;
+                  return<div key={i}>{prev===tier.guests?`${prev} pers`:`${prev}-${tier.guests} pers`}: <strong>{tier.price} RON</strong></div>;
+                })}
+              </div>
+            )}
             <div className="daterow" onClick={openBk}><div className="df"><label>{t.checkin}</label><span>{wBk&&bk.checkin?fmtDate(bk.checkin):'—'}</span></div><div className="df"><label>{t.checkout}</label><span>{wBk&&bk.checkout?fmtDate(bk.checkout):'—'}</span></div></div>
             <div className="winfo"><span>✓ {t.ci_time}</span><span>✓ {t.co_time}</span><span>✓ {t.min_stay}</span></div>
             {wBk&&bk.checkin&&bk.checkout&&<div className="wtotal"><span className="wtlbl">{nights} {nights===1?t.night:t.nights}</span><span className="wtval">{total} RON</span></div>}
@@ -399,7 +473,19 @@ export default function BlueBeeApp() {
         <div className="aaptname">🏠 {apt.name} {saved[apt.id]&&<span style={{fontSize:12,color:'#16a34a',fontFamily:'Jost',fontWeight:400}}>{t.saved}</span>}</div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:13}}>
           <div className="af"><label>{t.apt_name}</label><input value={apt.name} onChange={e=>upd(ai,'name',e.target.value)}/></div>
-          <div className="af"><label>{t.price_night}</label><input type="number" value={apt.price} onChange={e=>upd(ai,'price',Number(e.target.value))}/></div>
+          <div className="af"><label>Max oaspeți</label><input type="number" value={apt.maxGuests} onChange={e=>upd(ai,'maxGuests',Number(e.target.value))}/></div>
+        </div>
+        <div className="af">
+          <label>Prețuri per număr de oaspeți (RON/noapte)</label>
+          {apt.priceTiers&&apt.priceTiers.map((tier,ti)=>{
+            const prev=ti===0?1:apt.priceTiers[ti-1].guests+1;
+            return(<div key={ti} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+              <span style={{fontSize:12,color:'var(--gray)',minWidth:90}}>{prev===tier.guests?`${prev} pers`:`${prev}–${tier.guests} pers`}:</span>
+              <input type="number" value={tier.price} style={{width:90,border:`1.5px solid ${C.border}`,padding:'6px 10px',fontSize:13,fontFamily:'Jost',outline:'none',borderRadius:8,background:'var(--cream)'}}
+                onChange={e=>{const n=[...ea];const tiers=[...n[ai].priceTiers];tiers[ti]={...tiers[ti],price:Number(e.target.value)};n[ai]={...n[ai],priceTiers:tiers};setEa(n);}}/>
+              <span style={{fontSize:12,color:'var(--gray)'}}>RON</span>
+            </div>);
+          })}
         </div>
         <div className="af"><label>{t.description}</label><textarea rows={3} style={{width:'100%',border:`1.5px solid ${C.border}`,padding:'8px 12px',fontFamily:'Jost',fontSize:13,outline:'none',resize:'vertical',borderRadius:8,background:'var(--cream)'}} value={apt.desc.ro} onChange={e=>updDesc(ai,e.target.value)}/></div>
         <div className="af"><label>{t.amenities_lbl}</label><div className="amtoggle">{ALL_AM.map(k=><div key={k} className={`amt ${apt.amenities.includes(k)?'on':'off'}`} onClick={()=>togAm(ai,k)}>{AM_ICONS[k]} {t[`a_${k}`]||k}</div>)}</div></div>
@@ -407,7 +493,7 @@ export default function BlueBeeApp() {
           <div className="photolist">{apt.photos.map((url,pi)=>(<div key={pi} className="prow">{url&&<img src={url} alt="" onError={(e)=>{(e.target as HTMLImageElement).style.display='none'}}/>}<input value={url} placeholder={t.photo_url} onChange={e=>updPh(ai,pi,e.target.value)}/><button className="pdel" onClick={()=>delPh(ai,pi)}>×</button></div>))}</div>
           <button className="addphoto" onClick={()=>addPh(ai)}>{t.add_photo}</button>
         </div>
-        <button className="savebtn" onClick={()=>saveApt(apt.id,{name:apt.name,price:apt.price,desc:{...apts[ai].desc,ro:apt.desc.ro},amenities:apt.amenities,photos:apt.photos})}>{saved[apt.id]?t.saved:t.save}</button>
+        <button className="savebtn" onClick={()=>saveApt(apt.id,{name:apt.name,price:apt.priceTiers[0]?.price||apt.price,maxGuests:apt.maxGuests,priceTiers:apt.priceTiers,desc:{...apts[ai].desc,ro:apt.desc.ro},amenities:apt.amenities,photos:apt.photos})}>{saved[apt.id]?t.saved:t.save}</button>
       </div>))}
       <div className="acard">
         <div className="aaptname">📍 {t.contact_edit} {saved['cnt']&&<span style={{fontSize:12,color:'#16a34a',fontFamily:'Jost',fontWeight:400}}>{t.saved}</span>}</div>
@@ -415,7 +501,32 @@ export default function BlueBeeApp() {
         <button className="savebtn" onClick={()=>saveCnt(ec)}>{saved['cnt']?t.saved:t.save}</button>
       </div>
       <div className="acard">
-        <div className="aaptname">📋 {t.bookings_list}</div>
+        <div className="aaptname">🔄 Sincronizare Calendar iCal</div>
+        <p style={{fontSize:12,color:'var(--gray)',marginBottom:18,lineHeight:1.7}}>
+          Adaugă link-urile iCal de pe Booking.com și Travelminit pentru a evita dublarea rezervărilor. 
+          Le găsești în <strong>setările calendarului</strong> de pe fiecare platformă.
+        </p>
+        {ea.map((apt,ai)=>(<div key={apt.id} style={{marginBottom:20,padding:'16px',background:'var(--cream)',borderRadius:12}}>
+          <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:18,color:'var(--navy)',marginBottom:12}}>🏠 {apt.name}</div>
+          <div className="af">
+            <label>📅 Booking.com — link iCal export</label>
+            <input value={(apt as any).ical_booking||''} placeholder="https://admin.booking.com/hotel/hoteladmin/ical.html?..." onChange={e=>{const n=[...ea];(n[ai] as any).ical_booking=e.target.value;setEa(n);}}/>
+          </div>
+          <div className="af">
+            <label>📅 Travelminit — link iCal export</label>
+            <input value={(apt as any).ical_travelminit||''} placeholder="https://www.travelminit.ro/ical/..." onChange={e=>{const n=[...ea];(n[ai] as any).ical_travelminit=e.target.value;setEa(n);}}/>
+          </div>
+          <button className="savebtn" onClick={()=>{saveApt(apt.id,{...(apt as any),ical_booking:(apt as any).ical_booking,ical_travelminit:(apt as any).ical_travelminit});}}>
+            Salvează linkuri iCal
+          </button>
+        </div>))}
+        <div style={{padding:'14px',background:'#f0f9ff',border:'1px solid #bae6fd',borderRadius:10,fontSize:12,color:'#0369a1',lineHeight:1.7}}>
+          <strong>Cum găsești linkul iCal pe Booking.com:</strong><br/>
+          Extranet Booking → Calendar → Sincronizare → Export calendar → Copiază link<br/><br/>
+          <strong>Cum găsești linkul iCal pe Travelminit:</strong><br/>
+          Cont proprietar → Calendar → Sincronizare calendar → Export iCal → Copiază link
+        </div>
+      </div>
         {bookings.length===0?<p style={{color:C.gray,fontSize:13}}>{t.no_bookings}</p>:<div style={{overflowX:'auto'}}><table className="btable"><thead><tr><th>#</th><th>Apt</th><th>Check-in</th><th>Check-out</th><th>Oaspete</th><th>Email</th><th>Total</th></tr></thead><tbody>{bookings.map((b,i)=><tr key={b.id}><td style={{color:C.gray}}>{i+1}</td><td><strong>{b.aptName}</strong></td><td>{b.checkin}</td><td>{b.checkout}</td><td>{b.name}</td><td style={{color:C.gray}}>{b.email}</td><td><strong>{b.total} RON</strong></td></tr>)}</tbody></table></div>}
       </div>
     </div></div>);
@@ -437,7 +548,7 @@ export default function BlueBeeApp() {
       </div>
     </nav>
 
-    {page==='home'&&<div>
+    {page==='home'&&<div className="fin">
       <div className="hero">
         <div className="hc fin">
           <div className="hbadge"><BbLogo size={20}/> BlueBee Apartments</div>
@@ -451,7 +562,7 @@ export default function BlueBeeApp() {
         <h2 className="stitle">{t.our_apts}</h2>
         <div className="grid">
           {apts.map(apt=>{
-            const badge=(apt as unknown as Record<string,string>)[`badge_${lang}`]||apt.badge_ro,desc=apt.desc[lang]||apt.desc.ro;
+            const badge=(apt as Record<string,string>)[`badge_${lang}`]||apt.badge_ro,desc=apt.desc[lang]||apt.desc.ro;
             return(<div key={apt.id} className="card">
               <div className="cimgw"><img className="cimg" src={apt.photos[0]||''} alt={apt.name}/><div className="cbadge">{badge}</div></div>
               <div className="cbody">
@@ -459,7 +570,7 @@ export default function BlueBeeApp() {
                 <p className="cdesc">{desc.substring(0,128)}...</p>
                 <div className="cams">{apt.amenities.slice(0,5).map(k=><span key={k} className="cam">{AM_ICONS[k]} {t[`a_${k}`]||k}</span>)}</div>
                 <div className="cfoot">
-                  <div><div style={{fontSize:9,color:C.gray,letterSpacing:1,textTransform:'uppercase',marginBottom:3}}>{t.from}</div><div className="cprice">{apt.price} RON<span> {t.per_night}</span></div></div>
+                  <div><div style={{fontSize:9,color:C.gray,letterSpacing:1,textTransform:'uppercase',marginBottom:3}}>{t.from}</div><div className="cprice">{apt.priceTiers&&apt.priceTiers.length>0?apt.priceTiers[0].price:apt.price} RON<span> {t.per_night}</span></div></div>
                   <div className="cbtns">
                     <button className="ob" onClick={()=>setPage(`apt${apt.id}`)}>{t.details}</button>
                     <button className="cbook" onClick={()=>{setCalMo([new Date().getFullYear(),new Date().getMonth()]);setBk({aptId:apt.id,checkin:null,checkout:null,step:1});}}>{t.book_apt}</button>
@@ -474,19 +585,54 @@ export default function BlueBeeApp() {
         <div style={{fontSize:9,color:'rgba(196,151,58,.55)',letterSpacing:3,textTransform:'uppercase',textAlign:'center',marginBottom:9}}>{t.contact_sub}</div>
         <h2 className="ctitle">{t.contact_us}</h2>
         <div className="cgrid" style={{gridTemplateColumns:'repeat(4,1fr)'}}>
-          <div className="citem" onClick={()=>window.open(`tel:${contact.phone}`)}><div className="cicon">📞</div><div className="clbl">{t.phone_lbl}</div><div className="cval"><a href={`tel:${contact.phone}`}>{contact.phone}</a></div></div>
-          <div className="citem" onClick={()=>window.open(`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g,'')}`)}>  <div className="cicon">💬</div><div className="clbl">WhatsApp</div><div className="cval" style={{color:C.gold}}>{contact.whatsapp}</div></div>
-          <div className="citem" onClick={()=>window.open(`mailto:${contact.email}`)}><div className="cicon">✉️</div><div className="clbl">{t.email_lbl}</div><div className="cval"><a href={`mailto:${contact.email}`}>{contact.email}</a></div></div>
-          <div className="citem"><div className="cicon">📍</div><div className="clbl">{t.addr_lbl}</div><div className="cval">{contact.address}</div></div>
+          <div className="citem" onClick={()=>window.open(`tel:${contact.phone}`)}>
+            <div className="cicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" fill="#C4973A"/></svg></div>
+            <div className="clbl">{t.phone_lbl}</div>
+            <div className="cval"><a href={`tel:${contact.phone}`}>{contact.phone}</a></div>
+          </div>
+          <div className="citem" onClick={()=>window.open(`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g,'')}`)}>
+            <div className="cicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.6 1.4 5.1L2 22l5.1-1.4C8.6 21.5 10.3 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm5 13.9c-.2.6-1.2 1.1-1.7 1.2-.4.1-.9.1-1.4-.1-.3-.1-.7-.2-1.2-.5-2.1-.9-3.5-3-3.6-3.1-.1-.2-.9-1.2-.9-2.3 0-1.1.6-1.6.8-1.9.2-.2.5-.3.6-.3h.5c.2 0 .3 0 .5.4l.6 1.5c.1.2.1.3 0 .5l-.3.4-.3.4c-.1.1-.2.3-.1.5.1.2.6 1 1.3 1.6.9.8 1.6 1 1.9 1.1.2.1.4 0 .5-.1l.7-.8c.1-.2.3-.2.5-.1l1.6.8c.2.1.3.2.3.3 0 .1.1.5-.1 1.1z" fill="#C4973A"/></svg></div>
+            <div className="clbl">WhatsApp</div>
+            <div className="cval" style={{color:'var(--gold)'}}>{contact.whatsapp}</div>
+          </div>
+          <div className="citem" onClick={()=>window.open(`mailto:${contact.email}`)}>
+            <div className="cicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="#C4973A"/></svg></div>
+            <div className="clbl">{t.email_lbl}</div>
+            <div className="cval"><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
+          </div>
+          <div className="citem">
+            <div className="cicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z" fill="#C4973A"/></svg></div>
+            <div className="clbl">{t.addr_lbl}</div>
+            <div className="cval">{contact.address}</div>
+          </div>
+        </div>
+        <div style={{marginTop:44,maxWidth:1060,margin:'44px auto 0',borderRadius:18,overflow:'hidden',boxShadow:'0 8px 40px rgba(0,0,0,.3)',position:'relative'}}>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2848.5!2d23.1893889!3d45.8382932!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x474e9b2a75312d89%3A0x1f8b3e3e43f8302e!2sBulevardul+Eroilor%2C+Or%C4%83%C8%99tie!5e0!3m2!1sro!2sro!4v1"
+            width="100%" height="360" style={{border:0,display:'block',filter:'grayscale(15%) contrast(1.05)'}}
+            allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+          />
+          <a
+            href="https://maps.google.com/?q=45.8382932,23.1893889"
+            target="_blank" rel="noopener noreferrer"
+            style={{position:'absolute',bottom:16,right:16,background:'linear-gradient(135deg,#C4973A,#D4A94A)',color:'#fff',padding:'10px 20px',borderRadius:24,fontSize:11,letterSpacing:1.5,textTransform:'uppercase',textDecoration:'none',fontFamily:'Jost,sans-serif',fontWeight:500,boxShadow:'0 4px 16px rgba(196,151,58,.4)',display:'flex',alignItems:'center',gap:7}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/></svg>
+            Deschide în Google Maps
+          </a>
         </div>
       </div>
-    </div>}
-    {page==='apt1'&&<Detail apt={apts[0]}/>}
-    {page==='apt2'&&<Detail apt={apts[1]}/>}
-    {page==='admin'&&<Admin/>}
+    {page==='apt1'&&<div className="fin"><Detail apt={apts[0]}/></div>}
+    {page==='apt2'&&<div className="fin"><Detail apt={apts[1]}/></div>}
+    {page==='admin'&&<div className="fin"><Admin/></div>}
     {bk.step>0&&<Modal/>}
     {page!=='admin'&&<footer className="footer">
-      <div className="flogo"><BbLogo size={32}/>Blue<span>Bee</span></div>
+      <div className="flogo">
+        <BbLogo size={38}/>
+        <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:19,fontWeight:500,color:'#fff',lineHeight:1.1}}>
+          Blue<span style={{color:'var(--gold)'}}>Bee</span>
+          <span style={{fontSize:7,letterSpacing:3,textTransform:'uppercase',color:'rgba(196,151,58,.65)',display:'block'}}>apartments</span>
+        </div>
+      </div>
       <div className="ftxt">© {new Date().getFullYear()} BlueBee Apartments</div>
       <div className="ftxt" style={{fontSize:9,letterSpacing:1,opacity:.3}}>All rights reserved</div>
     </footer>}
