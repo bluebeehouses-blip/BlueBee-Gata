@@ -126,7 +126,7 @@ const CSS = `
 .card{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;transition:all .4s;box-shadow:0 2px 18px rgba(28,23,20,.07)}
 .card:hover{box-shadow:0 22px 68px rgba(28,23,20,.14);transform:translateY(-6px)}
 .cimgw{overflow:hidden;position:relative;height:272px}
-.cimg{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s;cursor:zoom-in}
+.cimg{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s;cursor:pointer}
 .card:hover .cimg{transform:scale(1.06)}
 .cbadge{position:absolute;top:14px;left:14px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:5px 14px;border-radius:20px;box-shadow:0 2px 10px rgba(196,151,58,.45)}
 .cimgw-btn{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.45);color:#fff;border:1px solid rgba(255,255,255,.3);padding:5px 12px;border-radius:20px;font-size:10px;letter-spacing:1px;cursor:pointer;backdrop-filter:blur(8px);font-family:'Jost',sans-serif;transition:all .2s}
@@ -783,8 +783,8 @@ export default function BlueBeeApp() {
           {apts.map(apt=>{
             const badge=(apt as unknown as Record<string,string>)[`badge_${lang}`]||apt.badge_ro,desc=apt.desc[lang]||apt.desc.ro;
             return(<div key={apt.id} className="card">
-              <div className="cimgw">
-                <img className="cimg" src={apt.photos[0]||''} alt={apt.name} onClick={e=>{e.stopPropagation();openLb(apt.photos,0);}}/>
+              <div className="cimgw" onClick={()=>setPage(`apt${apt.id}`)} style={{cursor:'pointer'}}>
+                <img className="cimg" src={apt.photos[0]||''} alt={apt.name} style={{cursor:'pointer'}}/>
                 <div className="cbadge">{badge}</div>
                 {apt.photos.length>1&&<button className="cimgw-btn" onClick={e=>{e.stopPropagation();openLb(apt.photos,0);}}>📷 {apt.photos.length} foto</button>}
               </div>
