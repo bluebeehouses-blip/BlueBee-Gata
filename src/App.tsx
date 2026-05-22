@@ -1,32 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const C = { navy:"#0D1B2A", navy2:"#162436", gold:"#C4973A", gold2:"#D4A94A", cream:"#FAF7F2", cream2:"#F2EBE0", gray:"#7A7470", gray2:"#AFA8A0", border:"#E8E0D5" };
 const AM_ICONS: Record<string,string> = {
-  // Conectivitate & Divertisment
   wifi:"📶", tv:"📺", netflix:"🎬", bluetooth:"🔊", phone:"📞",
-  // Climatizare & Confort
   ac:"❄️", heating:"🔥", fireplace:"🪵", fan:"🌀", humidifier:"💧",
-  // Bucătărie & Aparate
   kitchen:"🍳", fridge:"🧊", microwave:"📡", kettle:"☕", coffee:"☕",
   dishwasher:"🍽️", toaster:"🍞", oven:"🫕", blender:"🥤", wine_fridge:"🍷",
-  // Baie & Îngrijire
   bathrobe:"🥼", slippers:"🩴", towels:"🛁", hairdryer:"💨", iron:"👔",
   toiletries:"🧴", jacuzzi:"🛁", shower:"🚿",
-  // Spălătorie
   washer:"🫧", dryer:"🌀", ironing_board:"👕",
-  // Transport & Parcare
   parking:"🚗", ev_charger:"⚡", bike:"🚲", airport_shuttle:"🚌",
-  // Facilități clădire
   elevator:"🛗", pool:"🏊", gym:"💪", sauna:"🧖", garden:"🌿",
   bbq:"🍖", terrace:"☀️", playground:"🛝", storage:"📦",
-  // Servicii
   breakfast:"🥐", room_service:"🛎️", concierge:"🎩", safe:"🔒",
   desk:"💼", crib:"👶", pets:"🐾", smoking_outside:"🚭",
-  // Acces & Securitate
   self_checkin:"🔑", cctv:"📷", fire_extinguisher:"🧯", first_aid:"🩺"
 };
 const ALL_AM = Object.keys(AM_ICONS);
 const ADMIN_PASS = "BlueBee2024";
+const SITE_PASS = "Bluebee421993";
 const CONTACT0 = { phone:"+40 700 000 000", whatsapp:"+40 700 000 000", email:"contact@bluebeeapartments.ro", address:"Bulevardul Eroilor, Orăștie, 335700" };
 
 const APTS0 = [
@@ -42,11 +34,11 @@ const APTS0 = [
     photos:["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=900&q=80","https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=80","https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=900&q=80"] }
 ];
 
-const TXT: Record<string, Record<string,string>> = {
-  ro:{ home:"Acasă",apts:"Apartamente",contact:"Contact",book:"Rezervă",hero_sub:"Cazare elegantă în inima orașului",discover:"Descoperă",book_now:"Rezervă Acum",our_apts:"Apartamentele Noastre",from:"de la",per_night:"/ noapte",details:"Detalii",book_apt:"Rezervă",checkin:"Check-in",checkout:"Check-out",guests:"Oaspeți",total:"Total",nights:"nopți",night:"noapte",confirm:"Confirmă și Plătește",select_dates:"Selectează datele",ci_time:"Check-in: ora 15:00",co_time:"Check-out: ora 10:00",min_stay:"Sejur minim: 1 noapte",full_name:"Nume complet",email:"Email",phone:"Telefon / WhatsApp",payment:"Plată Securizată",card_nr:"Număr card",expiry:"LL/AA",cvc:"CVC",pay:"Plătește",success_title:"Rezervare Confirmată!",success_msg:"Vei primi un email de confirmare în scurt timp.",contact_us:"Contactează-ne",contact_sub:"Suntem la dispoziția ta",back:"← Înapoi",max_g:"Max.",g_unit:"oaspeți",bedroom:"Dormitor",living:"Living",bathroom:"Baie",kitchen_lbl:"Bucătărie",admin_title:"Panou Administrator",admin_pass:"Parolă",admin_login:"Autentificare",admin_wrong:"Parolă incorectă",admin_logout:"Deconectare",apt_name:"Nume apartament",price_night:"Preț / noapte (RON)",description:"Descriere",photos:"Fotografii",add_photo:"+ Adaugă fotografie",photo_url:"URL fotografie...",save:"Salvează",saved:"✓ Salvat!",bookings_list:"Rezervări",no_bookings:"Nu există rezervări încă",amenities_lbl:"Facilități",contact_edit:"Informații de contact",phone_lbl:"Telefon",email_lbl:"Email",addr_lbl:"Adresă",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Boxă Bluetooth",a_phone:"Telefon fix",a_ac:"Aer Condiționat",a_heating:"Încălzire",a_fireplace:"Șemineu",a_fan:"Ventilator",a_humidifier:"Umidificator",a_kitchen:"Bucătărie",a_fridge:"Frigider",a_microwave:"Cuptor microunde",a_kettle:"Fierbător apă",a_coffee:"Espressor",a_dishwasher:"Mașină de vase",a_toaster:"Toaster",a_oven:"Cuptor",a_blender:"Blender",a_wine_fridge:"Frigider vinuri",a_bathrobe:"Halat de baie",a_slippers:"Papuci de casă",a_towels:"Prosoape",a_hairdryer:"Uscător de păr",a_iron:"Fier de călcat",a_toiletries:"Articole toaletă",a_jacuzzi:"Jacuzzi",a_shower:"Duș",a_washer:"Mașină de spălat",a_dryer:"Uscător rufe",a_ironing_board:"Masă de călcat",a_parking:"Parcare",a_ev_charger:"Încărcare mașini electrice",a_bike:"Biciclete",a_airport_shuttle:"Transfer aeroport",a_elevator:"Lift",a_pool:"Piscină",a_gym:"Sală fitness",a_sauna:"Saună",a_garden:"Grădină",a_bbq:"Grătar",a_terrace:"Terasă",a_playground:"Loc de joacă",a_storage:"Depozitare bagaje",a_breakfast:"Mic dejun inclus",a_room_service:"Room service",a_concierge:"Concierge",a_safe:"Seif",a_desk:"Birou de lucru",a_crib:"Pătuț copil",a_pets:"Animale acceptate",a_smoking_outside:"Fumat permis afară",a_self_checkin:"Check-in autonom",a_cctv:"Camere securitate",a_fire_extinguisher:"Stingător incendiu",a_first_aid:"Trusă prim ajutor" },
-  en:{ home:"Home",apts:"Apartments",contact:"Contact",book:"Book",hero_sub:"Elegant accommodation in the heart of the city",discover:"Discover",book_now:"Book Now",our_apts:"Our Apartments",from:"from",per_night:"/ night",details:"Details",book_apt:"Book",checkin:"Check-in",checkout:"Check-out",guests:"Guests",total:"Total",nights:"nights",night:"night",confirm:"Confirm & Pay",select_dates:"Select dates",ci_time:"Check-in: 3:00 PM",co_time:"Check-out: 10:00 AM",min_stay:"Minimum stay: 1 night",full_name:"Full name",email:"Email",phone:"Phone / WhatsApp",payment:"Secure Payment",card_nr:"Card number",expiry:"MM/YY",cvc:"CVC",pay:"Pay",success_title:"Booking Confirmed!",success_msg:"You will receive a confirmation email shortly.",contact_us:"Contact Us",contact_sub:"We are here for you",back:"← Back",max_g:"Max.",g_unit:"guests",bedroom:"Bedroom",living:"Living room",bathroom:"Bathroom",kitchen_lbl:"Kitchen",admin_title:"Admin Panel",admin_pass:"Password",admin_login:"Login",admin_wrong:"Incorrect password",admin_logout:"Logout",apt_name:"Apartment name",price_night:"Price / night (RON)",description:"Description",photos:"Photos",add_photo:"+ Add photo",photo_url:"Photo URL...",save:"Save",saved:"✓ Saved!",bookings_list:"Bookings",no_bookings:"No bookings yet",amenities_lbl:"Amenities",contact_edit:"Contact information",phone_lbl:"Phone",email_lbl:"Email",addr_lbl:"Address",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Bluetooth Speaker",a_phone:"Landline Phone",a_ac:"Air Conditioning",a_heating:"Heating",a_fireplace:"Fireplace",a_fan:"Fan",a_humidifier:"Humidifier",a_kitchen:"Kitchen",a_fridge:"Fridge",a_microwave:"Microwave",a_kettle:"Kettle",a_coffee:"Espresso Machine",a_dishwasher:"Dishwasher",a_toaster:"Toaster",a_oven:"Oven",a_blender:"Blender",a_wine_fridge:"Wine Fridge",a_bathrobe:"Bathrobe",a_slippers:"Slippers",a_towels:"Towels",a_hairdryer:"Hair Dryer",a_iron:"Iron",a_toiletries:"Toiletries",a_jacuzzi:"Jacuzzi",a_shower:"Shower",a_washer:"Washing Machine",a_dryer:"Dryer",a_ironing_board:"Ironing Board",a_parking:"Parking",a_ev_charger:"EV Charger",a_bike:"Bikes",a_airport_shuttle:"Airport Shuttle",a_elevator:"Elevator",a_pool:"Pool",a_gym:"Gym",a_sauna:"Sauna",a_garden:"Garden",a_bbq:"BBQ",a_terrace:"Terrace",a_playground:"Playground",a_storage:"Luggage Storage",a_breakfast:"Breakfast Included",a_room_service:"Room Service",a_concierge:"Concierge",a_safe:"Safe",a_desk:"Work Desk",a_crib:"Baby Crib",a_pets:"Pets Allowed",a_smoking_outside:"Smoking Outside",a_self_checkin:"Self Check-in",a_cctv:"CCTV",a_fire_extinguisher:"Fire Extinguisher",a_first_aid:"First Aid Kit" },
-  fr:{ home:"Accueil",apts:"Appartements",contact:"Contact",book:"Réserver",hero_sub:"Hébergement élégant au cœur de la ville",discover:"Découvrir",book_now:"Réserver",our_apts:"Nos Appartements",from:"à partir de",per_night:"/ nuit",details:"Détails",book_apt:"Réserver",checkin:"Arrivée",checkout:"Départ",guests:"Voyageurs",total:"Total",nights:"nuits",night:"nuit",confirm:"Confirmer et Payer",select_dates:"Sélectionner les dates",ci_time:"Arrivée: 15h00",co_time:"Départ: 10h00",min_stay:"Séjour minimum: 1 nuit",full_name:"Nom complet",email:"Email",phone:"Téléphone / WhatsApp",payment:"Paiement Sécurisé",card_nr:"Numéro de carte",expiry:"MM/AA",cvc:"CVC",pay:"Payer",success_title:"Réservation Confirmée!",success_msg:"Vous recevrez un email de confirmation.",contact_us:"Nous Contacter",contact_sub:"Nous sommes à votre disposition",back:"← Retour",max_g:"Max.",g_unit:"voyageurs",bedroom:"Chambre",living:"Salon",bathroom:"Salle de bain",kitchen_lbl:"Cuisine",admin_title:"Panneau Admin",admin_pass:"Mot de passe",admin_login:"Connexion",admin_wrong:"Mot de passe incorrect",admin_logout:"Déconnexion",apt_name:"Nom de l'appartement",price_night:"Prix / nuit (RON)",description:"Description",photos:"Photos",add_photo:"+ Ajouter une photo",photo_url:"URL de la photo...",save:"Enregistrer",saved:"✓ Sauvegardé!",bookings_list:"Réservations",no_bookings:"Aucune réservation",amenities_lbl:"Équipements",contact_edit:"Informations de contact",phone_lbl:"Téléphone",email_lbl:"Email",addr_lbl:"Adresse",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Enceinte Bluetooth",a_phone:"Téléphone fixe",a_ac:"Climatisation",a_heating:"Chauffage",a_fireplace:"Cheminée",a_fan:"Ventilateur",a_humidifier:"Humidificateur",a_kitchen:"Cuisine",a_fridge:"Réfrigérateur",a_microwave:"Micro-ondes",a_kettle:"Bouilloire",a_coffee:"Machine à café",a_dishwasher:"Lave-vaisselle",a_toaster:"Grille-pain",a_oven:"Four",a_blender:"Mixeur",a_wine_fridge:"Cave à vins",a_bathrobe:"Peignoir",a_slippers:"Chaussons",a_towels:"Serviettes",a_hairdryer:"Sèche-cheveux",a_iron:"Fer à repasser",a_toiletries:"Articles de toilette",a_jacuzzi:"Jacuzzi",a_shower:"Douche",a_washer:"Lave-linge",a_dryer:"Sèche-linge",a_ironing_board:"Planche à repasser",a_parking:"Parking",a_ev_charger:"Borne électrique",a_bike:"Vélos",a_airport_shuttle:"Navette aéroport",a_elevator:"Ascenseur",a_pool:"Piscine",a_gym:"Salle de sport",a_sauna:"Sauna",a_garden:"Jardin",a_bbq:"Barbecue",a_terrace:"Terrasse",a_playground:"Aire de jeux",a_storage:"Consigne bagages",a_breakfast:"Petit-déjeuner inclus",a_room_service:"Service en chambre",a_concierge:"Conciergerie",a_safe:"Coffre-fort",a_desk:"Bureau",a_crib:"Lit bébé",a_pets:"Animaux acceptés",a_smoking_outside:"Fumeurs dehors",a_self_checkin:"Arrivée autonome",a_cctv:"Vidéosurveillance",a_fire_extinguisher:"Extincteur",a_first_aid:"Trousse de secours" },
-  it:{ home:"Home",apts:"Appartamenti",contact:"Contatti",book:"Prenota",hero_sub:"Alloggio elegante nel cuore della città",discover:"Scopri",book_now:"Prenota Ora",our_apts:"I Nostri Appartamenti",from:"da",per_night:"/ notte",details:"Dettagli",book_apt:"Prenota",checkin:"Check-in",checkout:"Check-out",guests:"Ospiti",total:"Totale",nights:"notti",night:"notte",confirm:"Conferma e Paga",select_dates:"Seleziona le date",ci_time:"Check-in: 15:00",co_time:"Check-out: 10:00",min_stay:"Soggiorno minimo: 1 notte",full_name:"Nome completo",email:"Email",phone:"Telefono / WhatsApp",payment:"Pagamento Sicuro",card_nr:"Numero carta",expiry:"MM/AA",cvc:"CVC",pay:"Paga",success_title:"Prenotazione Confermata!",success_msg:"Riceverai un'email di conferma a breve.",contact_us:"Contattaci",contact_sub:"Siamo a tua disposizione",back:"← Indietro",max_g:"Max.",g_unit:"ospiti",bedroom:"Camera da letto",living:"Soggiorno",bathroom:"Bagno",kitchen_lbl:"Cucina",admin_title:"Pannello Admin",admin_pass:"Password",admin_login:"Accedi",admin_wrong:"Password errata",admin_logout:"Esci",apt_name:"Nome appartamento",price_night:"Prezzo / notte (RON)",description:"Descrizione",photos:"Foto",add_photo:"+ Aggiungi foto",photo_url:"URL foto...",save:"Salva",saved:"✓ Salvato!",bookings_list:"Prenotazioni",no_bookings:"Nessuna prenotazione",amenities_lbl:"Servizi",contact_edit:"Informazioni di contatto",phone_lbl:"Telefono",email_lbl:"Email",addr_lbl:"Indirizzo",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Cassa Bluetooth",a_phone:"Telefono fisso",a_ac:"Aria Condizionata",a_heating:"Riscaldamento",a_fireplace:"Camino",a_fan:"Ventilatore",a_humidifier:"Umidificatore",a_kitchen:"Cucina",a_fridge:"Frigorifero",a_microwave:"Microonde",a_kettle:"Bollitore",a_coffee:"Macchina caffè",a_dishwasher:"Lavastoviglie",a_toaster:"Tostapane",a_oven:"Forno",a_blender:"Frullatore",a_wine_fridge:"Cantinetta vini",a_bathrobe:"Accappatoio",a_slippers:"Pantofole",a_towels:"Asciugamani",a_hairdryer:"Asciugacapelli",a_iron:"Ferro da stiro",a_toiletries:"Articoli da toilette",a_jacuzzi:"Jacuzzi",a_shower:"Doccia",a_washer:"Lavatrice",a_dryer:"Asciugatrice",a_ironing_board:"Asse da stiro",a_parking:"Parcheggio",a_ev_charger:"Ricarica elettrica",a_bike:"Biciclette",a_airport_shuttle:"Navetta aeroporto",a_elevator:"Ascensore",a_pool:"Piscina",a_gym:"Palestra",a_sauna:"Sauna",a_garden:"Giardino",a_bbq:"Barbecue",a_terrace:"Terrazza",a_playground:"Area giochi",a_storage:"Deposito bagagli",a_breakfast:"Colazione inclusa",a_room_service:"Servizio in camera",a_concierge:"Concierge",a_safe:"Cassaforte",a_desk:"Scrivania",a_crib:"Culla",a_pets:"Animali ammessi",a_smoking_outside:"Fumatori fuori",a_self_checkin:"Check-in autonomo",a_cctv:"Videosorveglianza",a_fire_extinguisher:"Estintore",a_first_aid:"Kit pronto soccorso" }
+const TXT: Record<string,Record<string,string>> = {
+  ro:{ home:"Acasă",apts:"Apartamente",contact:"Contact",book:"Rezervă",hero_sub:"Cazare elegantă în inima orașului",discover:"Descoperă",book_now:"Rezervă Acum",our_apts:"Apartamentele Noastre",from:"de la",per_night:"/ noapte",details:"Detalii",book_apt:"Rezervă",checkin:"Check-in",checkout:"Check-out",guests:"Oaspeți",total:"Total",nights:"nopți",night:"noapte",confirm:"Confirmă și Plătește",select_dates:"Selectează datele",ci_time:"Check-in: ora 15:00",co_time:"Check-out: ora 10:00",min_stay:"Sejur minim: 1 noapte",full_name:"Nume și prenume",email:"Email (opțional)",phone:"Telefon",payment:"Plată Securizată",card_nr:"Număr card",expiry:"LL/AA",cvc:"CVC",pay:"Plătește",success_title:"Rezervare Confirmată!",success_msg:"Vei fi contactat în scurt timp pentru confirmare.",contact_us:"Contactează-ne",contact_sub:"Suntem la dispoziția ta",back:"← Înapoi",max_g:"Max.",g_unit:"oaspeți",bedroom:"Dormitor",living:"Living",bathroom:"Baie",kitchen_lbl:"Bucătărie",amenities_lbl:"Facilități",addr_lbl:"Adresă",phone_lbl:"Telefon",email_lbl:"Email",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Boxă Bluetooth",a_phone:"Telefon fix",a_ac:"Aer Condiționat",a_heating:"Încălzire",a_fireplace:"Șemineu",a_fan:"Ventilator",a_humidifier:"Umidificator",a_kitchen:"Bucătărie",a_fridge:"Frigider",a_microwave:"Cuptor microunde",a_kettle:"Fierbător apă",a_coffee:"Espressor",a_dishwasher:"Mașină de vase",a_toaster:"Toaster",a_oven:"Cuptor",a_blender:"Blender",a_wine_fridge:"Frigider vinuri",a_bathrobe:"Halat de baie",a_slippers:"Papuci de casă",a_towels:"Prosoape",a_hairdryer:"Uscător de păr",a_iron:"Fier de călcat",a_toiletries:"Articole toaletă",a_jacuzzi:"Jacuzzi",a_shower:"Duș",a_washer:"Mașină de spălat",a_dryer:"Uscător rufe",a_ironing_board:"Masă de călcat",a_parking:"Parcare",a_ev_charger:"Încărcare EV",a_bike:"Biciclete",a_airport_shuttle:"Transfer aeroport",a_elevator:"Lift",a_pool:"Piscină",a_gym:"Sală fitness",a_sauna:"Saună",a_garden:"Grădină",a_bbq:"Grătar",a_terrace:"Terasă",a_playground:"Loc de joacă",a_storage:"Depozitare bagaje",a_breakfast:"Mic dejun inclus",a_room_service:"Room service",a_concierge:"Concierge",a_safe:"Seif",a_desk:"Birou de lucru",a_crib:"Pătuț copil",a_pets:"Animale acceptate",a_smoking_outside:"Fumat permis afară",a_self_checkin:"Check-in autonom",a_cctv:"Camere securitate",a_fire_extinguisher:"Stingător incendiu",a_first_aid:"Trusă prim ajutor" },
+  en:{ home:"Home",apts:"Apartments",contact:"Contact",book:"Book",hero_sub:"Elegant accommodation in the heart of the city",discover:"Discover",book_now:"Book Now",our_apts:"Our Apartments",from:"from",per_night:"/ night",details:"Details",book_apt:"Book",checkin:"Check-in",checkout:"Check-out",guests:"Guests",total:"Total",nights:"nights",night:"night",confirm:"Confirm & Pay",select_dates:"Select dates",ci_time:"Check-in: 3:00 PM",co_time:"Check-out: 10:00 AM",min_stay:"Minimum stay: 1 night",full_name:"Full name",email:"Email (optional)",phone:"Phone",payment:"Secure Payment",card_nr:"Card number",expiry:"MM/YY",cvc:"CVC",pay:"Pay",success_title:"Booking Confirmed!",success_msg:"You will be contacted shortly for confirmation.",contact_us:"Contact Us",contact_sub:"We are here for you",back:"← Back",max_g:"Max.",g_unit:"guests",bedroom:"Bedroom",living:"Living room",bathroom:"Bathroom",kitchen_lbl:"Kitchen",amenities_lbl:"Amenities",addr_lbl:"Address",phone_lbl:"Phone",email_lbl:"Email",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Bluetooth Speaker",a_phone:"Landline",a_ac:"Air Conditioning",a_heating:"Heating",a_fireplace:"Fireplace",a_fan:"Fan",a_humidifier:"Humidifier",a_kitchen:"Kitchen",a_fridge:"Fridge",a_microwave:"Microwave",a_kettle:"Kettle",a_coffee:"Espresso Machine",a_dishwasher:"Dishwasher",a_toaster:"Toaster",a_oven:"Oven",a_blender:"Blender",a_wine_fridge:"Wine Fridge",a_bathrobe:"Bathrobe",a_slippers:"Slippers",a_towels:"Towels",a_hairdryer:"Hair Dryer",a_iron:"Iron",a_toiletries:"Toiletries",a_jacuzzi:"Jacuzzi",a_shower:"Shower",a_washer:"Washing Machine",a_dryer:"Dryer",a_ironing_board:"Ironing Board",a_parking:"Parking",a_ev_charger:"EV Charger",a_bike:"Bikes",a_airport_shuttle:"Airport Shuttle",a_elevator:"Elevator",a_pool:"Pool",a_gym:"Gym",a_sauna:"Sauna",a_garden:"Garden",a_bbq:"BBQ",a_terrace:"Terrace",a_playground:"Playground",a_storage:"Luggage Storage",a_breakfast:"Breakfast",a_room_service:"Room Service",a_concierge:"Concierge",a_safe:"Safe",a_desk:"Work Desk",a_crib:"Baby Crib",a_pets:"Pets Allowed",a_smoking_outside:"Smoking Outside",a_self_checkin:"Self Check-in",a_cctv:"CCTV",a_fire_extinguisher:"Fire Extinguisher",a_first_aid:"First Aid Kit" },
+  fr:{ home:"Accueil",apts:"Appartements",contact:"Contact",book:"Réserver",hero_sub:"Hébergement élégant au cœur de la ville",discover:"Découvrir",book_now:"Réserver",our_apts:"Nos Appartements",from:"à partir de",per_night:"/ nuit",details:"Détails",book_apt:"Réserver",checkin:"Arrivée",checkout:"Départ",guests:"Voyageurs",total:"Total",nights:"nuits",night:"nuit",confirm:"Confirmer et Payer",select_dates:"Sélectionner les dates",ci_time:"Arrivée: 15h00",co_time:"Départ: 10h00",min_stay:"Séjour minimum: 1 nuit",full_name:"Nom complet",email:"Email (optionnel)",phone:"Téléphone",payment:"Paiement Sécurisé",card_nr:"Numéro de carte",expiry:"MM/AA",cvc:"CVC",pay:"Payer",success_title:"Réservation Confirmée!",success_msg:"Vous serez contacté prochainement pour confirmation.",contact_us:"Nous Contacter",contact_sub:"Nous sommes à votre disposition",back:"← Retour",max_g:"Max.",g_unit:"voyageurs",bedroom:"Chambre",living:"Salon",bathroom:"Salle de bain",kitchen_lbl:"Cuisine",amenities_lbl:"Équipements",addr_lbl:"Adresse",phone_lbl:"Téléphone",email_lbl:"Email",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Enceinte Bluetooth",a_phone:"Téléphone fixe",a_ac:"Climatisation",a_heating:"Chauffage",a_fireplace:"Cheminée",a_fan:"Ventilateur",a_humidifier:"Humidificateur",a_kitchen:"Cuisine",a_fridge:"Réfrigérateur",a_microwave:"Micro-ondes",a_kettle:"Bouilloire",a_coffee:"Machine à café",a_dishwasher:"Lave-vaisselle",a_toaster:"Grille-pain",a_oven:"Four",a_blender:"Mixeur",a_wine_fridge:"Cave à vins",a_bathrobe:"Peignoir",a_slippers:"Chaussons",a_towels:"Serviettes",a_hairdryer:"Sèche-cheveux",a_iron:"Fer à repasser",a_toiletries:"Articles de toilette",a_jacuzzi:"Jacuzzi",a_shower:"Douche",a_washer:"Lave-linge",a_dryer:"Sèche-linge",a_ironing_board:"Planche à repasser",a_parking:"Parking",a_ev_charger:"Borne EV",a_bike:"Vélos",a_airport_shuttle:"Navette aéroport",a_elevator:"Ascenseur",a_pool:"Piscine",a_gym:"Salle de sport",a_sauna:"Sauna",a_garden:"Jardin",a_bbq:"Barbecue",a_terrace:"Terrasse",a_playground:"Aire de jeux",a_storage:"Consigne bagages",a_breakfast:"Petit-déjeuner",a_room_service:"Service en chambre",a_concierge:"Conciergerie",a_safe:"Coffre-fort",a_desk:"Bureau",a_crib:"Lit bébé",a_pets:"Animaux acceptés",a_smoking_outside:"Fumeurs dehors",a_self_checkin:"Arrivée autonome",a_cctv:"Vidéosurveillance",a_fire_extinguisher:"Extincteur",a_first_aid:"Trousse de secours" },
+  it:{ home:"Home",apts:"Appartamenti",contact:"Contatti",book:"Prenota",hero_sub:"Alloggio elegante nel cuore della città",discover:"Scopri",book_now:"Prenota Ora",our_apts:"I Nostri Appartamenti",from:"da",per_night:"/ notte",details:"Dettagli",book_apt:"Prenota",checkin:"Check-in",checkout:"Check-out",guests:"Ospiti",total:"Totale",nights:"notti",night:"notte",confirm:"Conferma e Paga",select_dates:"Seleziona le date",ci_time:"Check-in: 15:00",co_time:"Check-out: 10:00",min_stay:"Soggiorno minimo: 1 notte",full_name:"Nome completo",email:"Email (opzionale)",phone:"Telefono",payment:"Pagamento Sicuro",card_nr:"Numero carta",expiry:"MM/AA",cvc:"CVC",pay:"Paga",success_title:"Prenotazione Confermata!",success_msg:"Sarai contattato a breve per la conferma.",contact_us:"Contattaci",contact_sub:"Siamo a tua disposizione",back:"← Indietro",max_g:"Max.",g_unit:"ospiti",bedroom:"Camera da letto",living:"Soggiorno",bathroom:"Bagno",kitchen_lbl:"Cucina",amenities_lbl:"Servizi",addr_lbl:"Indirizzo",phone_lbl:"Telefono",email_lbl:"Email",wa_lbl:"WhatsApp",a_wifi:"WiFi",a_tv:"Smart TV",a_netflix:"Netflix",a_bluetooth:"Cassa Bluetooth",a_phone:"Telefono fisso",a_ac:"Aria Condizionata",a_heating:"Riscaldamento",a_fireplace:"Camino",a_fan:"Ventilatore",a_humidifier:"Umidificatore",a_kitchen:"Cucina",a_fridge:"Frigorifero",a_microwave:"Microonde",a_kettle:"Bollitore",a_coffee:"Macchina caffè",a_dishwasher:"Lavastoviglie",a_toaster:"Tostapane",a_oven:"Forno",a_blender:"Frullatore",a_wine_fridge:"Cantinetta vini",a_bathrobe:"Accappatoio",a_slippers:"Pantofole",a_towels:"Asciugamani",a_hairdryer:"Asciugacapelli",a_iron:"Ferro da stiro",a_toiletries:"Articoli da toilette",a_jacuzzi:"Jacuzzi",a_shower:"Doccia",a_washer:"Lavatrice",a_dryer:"Asciugatrice",a_ironing_board:"Asse da stiro",a_parking:"Parcheggio",a_ev_charger:"Ricarica EV",a_bike:"Biciclette",a_airport_shuttle:"Navetta aeroporto",a_elevator:"Ascensore",a_pool:"Piscina",a_gym:"Palestra",a_sauna:"Sauna",a_garden:"Giardino",a_bbq:"Barbecue",a_terrace:"Terrazza",a_playground:"Area giochi",a_storage:"Deposito bagagli",a_breakfast:"Colazione",a_room_service:"Servizio in camera",a_concierge:"Concierge",a_safe:"Cassaforte",a_desk:"Scrivania",a_crib:"Culla",a_pets:"Animali ammessi",a_smoking_outside:"Fumatori fuori",a_self_checkin:"Check-in autonomo",a_cctv:"Videosorveglianza",a_fire_extinguisher:"Estintore",a_first_aid:"Kit pronto soccorso" }
 };
 
 const toStr = (d: Date) => d.toISOString().split('T')[0];
@@ -60,6 +52,7 @@ const getPriceForGuests = (apt: Apt, guests: number) => {
   return tier ? tier.price : apt.priceTiers[apt.priceTiers.length-1].price;
 };
 const MONTHS = ['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'];
+const MONTHS_SHORT = ['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'];
 
 const BbLogo = ({size=44}:{size?:number}) => (
   <svg viewBox="0 0 100 100" width={size} height={size} style={{flexShrink:0}}>
@@ -82,9 +75,15 @@ function monthDays(y: number, m: number){
   return days;
 }
 
-// localStorage helpers
 const lsGet = (key: string) => { try { return localStorage.getItem(key); } catch(e) { return null; } };
 const lsSet = (key: string, val: string) => { try { localStorage.setItem(key, val); } catch(e) {} };
+
+interface PriceTier { guests:number; price:number; }
+interface Apt { id:number; name:string; badge_ro:string; badge_en:string; badge_fr:string; badge_it:string; price:number; maxGuests:number; priceTiers:PriceTier[]; desc:Record<string,string>; amenities:string[]; photos:string[]; ical_booking?:string; ical_travelminit?:string; }
+interface Bk { aptId:number|null; checkin:string|null; checkout:string|null; step:number; }
+interface Guest { name:string; email:string; phone:string; guests:number; }
+interface Booking { id:number; aptId:number|null; aptName:string; checkin:string|null; checkout:string|null; name:string; email:string; phone:string; guests:number; total:number; date:string; status:string; }
+interface Contact { phone:string; whatsapp:string; email:string; address:string; }
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap');
@@ -127,9 +126,11 @@ const CSS = `
 .card{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer;transition:all .4s;box-shadow:0 2px 18px rgba(28,23,20,.07)}
 .card:hover{box-shadow:0 22px 68px rgba(28,23,20,.14);transform:translateY(-6px)}
 .cimgw{overflow:hidden;position:relative;height:272px}
-.cimg{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s}
+.cimg{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s;cursor:zoom-in}
 .card:hover .cimg{transform:scale(1.06)}
 .cbadge{position:absolute;top:14px;left:14px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:5px 14px;border-radius:20px;box-shadow:0 2px 10px rgba(196,151,58,.45)}
+.cimgw-btn{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.45);color:#fff;border:1px solid rgba(255,255,255,.3);padding:5px 12px;border-radius:20px;font-size:10px;letter-spacing:1px;cursor:pointer;backdrop-filter:blur(8px);font-family:'Jost',sans-serif;transition:all .2s}
+.cimgw-btn:hover{background:rgba(196,151,58,.7);border-color:var(--gold)}
 .cbody{padding:26px}
 .cname{font-family:'Cormorant Garamond',serif;font-size:27px;color:var(--navy);margin-bottom:8px;letter-spacing:-.3px}
 .cdesc{color:var(--gray);font-size:13px;line-height:1.75;margin-bottom:17px}
@@ -145,7 +146,7 @@ const CSS = `
 .cbook:hover{box-shadow:0 4px 18px rgba(196,151,58,.45);transform:translateY(-1px)}
 .detail{padding-top:0}
 .gal{position:relative;height:480px;background:#162436}
-.galimg{width:100%;height:100%;object-fit:cover;display:block}
+.galimg{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
 .galnav{position:absolute;bottom:18px;right:18px;display:flex;gap:7px}
 .galbtn{width:40px;height:40px;background:rgba(255,255,255,.11);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;border-radius:10px;transition:all .2s;font-family:inherit}
 .galbtn:hover{background:var(--gold);border-color:var(--gold)}
@@ -196,6 +197,7 @@ const CSS = `
 .ff label{display:block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray2);margin-bottom:5px}
 .ff input{width:100%;border:1.5px solid var(--border);padding:10px 13px;font-size:13px;outline:none;transition:border-color .2s;font-family:'Jost',sans-serif;border-radius:9px;background:var(--cream)}
 .ff input:focus{border-color:var(--gold);background:#fff}
+.ff input.req{border-color:var(--gold)}
 .paybox{background:var(--cream);padding:18px;margin:16px 0;border:1px solid var(--border);border-radius:13px}
 .paytitle{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:13px}
 .cardrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
@@ -214,8 +216,11 @@ const CSS = `
 .cval{color:#fff;font-size:13px}
 .cval a{color:var(--gold);text-decoration:none}
 .admin{min-height:100vh;background:var(--cream)}
-.awrap{max-width:860px;margin:0 auto;padding:36px 20px}
-.atitle{font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--navy);margin-bottom:4px;letter-spacing:-.5px}
+.admin-nav{background:var(--navy);padding:0 32px;display:flex;gap:4px;align-items:center;overflow-x:auto}
+.admin-tab{padding:18px 20px;color:rgba(255,255,255,.5);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;background:none;border:none;font-family:'Jost',sans-serif;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.admin-tab:hover{color:rgba(255,255,255,.8)}
+.admin-tab.on{color:#fff;border-bottom-color:var(--gold)}
+.awrap{max-width:1100px;margin:0 auto;padding:32px 20px}
 .acard{background:#fff;border-radius:18px;padding:26px;margin-bottom:18px;box-shadow:0 2px 16px rgba(28,23,20,.07)}
 .aaptname{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--navy);margin-bottom:20px;display:flex;align-items:center;gap:9px}
 .af{margin-bottom:13px}
@@ -234,14 +239,48 @@ const CSS = `
 .pdel:hover{background:#fef2f2;color:#ef4444;border-color:#ef4444}
 .savebtn{background:var(--navy);color:#fff;border:none;padding:12px 26px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:all .3s;margin-top:13px;border-radius:22px}
 .savebtn:hover{background:var(--gold)}
-.btable{width:100%;border-collapse:collapse;font-size:12px}
-.btable th{text-align:left;padding:8px 13px;background:var(--cream);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);border-bottom:1px solid var(--border)}
-.btable td{padding:10px 13px;border-bottom:1px solid var(--border)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat{background:#fff;border-radius:16px;padding:22px;box-shadow:0 2px 16px rgba(28,23,20,.07);text-align:center}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--navy);letter-spacing:-.5px}
+.stat-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray2);margin-top:4px}
+.admin-cal{background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 16px rgba(28,23,20,.07)}
+.admin-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.admin-cal-title{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--navy)}
+.admin-cal-nav{display:flex;gap:8px;align-items:center}
+.admin-cal-nbtn{width:32px;height:32px;border:1px solid var(--border);background:none;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.admin-cal-nbtn:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+.admin-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.admin-cal-dow{text-align:center;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--gray2);padding:6px 0}
+.admin-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:7px;border:1px solid transparent;position:relative;cursor:default;min-width:0}
+.admin-day.free{background:rgba(34,197,94,.12);color:#15803d;font-weight:500}
+.admin-day.occ{background:rgba(239,68,68,.12);color:#dc2626;font-weight:500}
+.admin-day.past{color:#d1d5db;background:transparent}
+.admin-day.tod{border-color:var(--gold)}
+.cal-legend{display:flex;gap:16px;margin-top:14px;font-size:11px}
+.cal-leg{display:flex;align-items:center;gap:6px}
+.cal-dot{width:10px;height:10px;border-radius:50%}
+.bk-tabs{display:flex;gap:4px;margin-bottom:20px}
+.bk-tab{padding:10px 20px;border:1.5px solid var(--border);border-radius:22px;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;background:none;font-family:'Jost',sans-serif;transition:all .2s}
+.bk-tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.bk-tab.off{color:var(--gray)}
+.bk-card{background:#fff;border-radius:14px;padding:20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(28,23,20,.07);display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}
+.bk-card.cancelled{opacity:.5}
+.bk-name{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--navy);margin-bottom:4px}
+.bk-info{font-size:12px;color:var(--gray);line-height:1.8}
+.bk-info strong{color:var(--navy)}
+.bk-dates{background:var(--cream);padding:10px 14px;border-radius:10px;font-size:12px;margin-top:8px;display:flex;gap:16px}
+.bk-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.bk-total{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--navy)}
+.bk-status{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px}
+.bk-status.active{background:rgba(34,197,94,.12);color:#15803d}
+.bk-status.cancelled{background:rgba(239,68,68,.1);color:#dc2626}
+.bk-cancel{background:none;border:1px solid #fca5a5;color:#dc2626;padding:7px 14px;border-radius:18px;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:all .2s}
+.bk-cancel:hover{background:#fef2f2}
 .loginwrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(150deg,var(--navy) 0%,#1a3a5c 100%)}
 .loginbox{background:#fff;border-radius:22px;padding:50px 42px;width:100%;max-width:360px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.3)}
 .llogo{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--navy);margin-bottom:5px}
 .lsub{font-size:9px;letter-spacing:2px;color:var(--gray2);text-transform:uppercase;margin-bottom:34px}
-.linput{width:100%;border:1.5px solid var(--border);padding:12px 15px;font-size:14px;outline:none;margin-bottom:13px;text-align:center;letter-spacing:4px;font-family:'Jost',sans-serif;border-radius:9px;background:var(--cream)}
+.linput{width:100%;border:1.5px solid var(--border);padding:12px 15px;font-size:14px;outline:none;margin-bottom:13px;text-align:center;font-family:'Jost',sans-serif;border-radius:9px;background:var(--cream)}
 .linput:focus{border-color:var(--gold);background:#fff}
 .lerr{color:#ef4444;font-size:12px;margin-bottom:11px}
 .backbtn{display:inline-flex;align-items:center;gap:5px;color:var(--gray);font-size:11px;cursor:pointer;background:none;border:none;font-family:'Jost',sans-serif;margin-bottom:18px;padding:0;transition:color .2s}
@@ -253,22 +292,21 @@ const CSS = `
 .infosumm{background:var(--cream);padding:10px 14px;margin-bottom:20px;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;border-radius:10px}
 .addphoto{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:8px;border:1.5px dashed var(--gold);color:var(--gold);font-size:11px;background:none;cursor:pointer;font-family:'Jost',sans-serif;transition:all .2s;border-radius:9px}
 .addphoto:hover{background:rgba(196,151,58,.06)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:300;display:flex;align-items:center;justify-content:center;cursor:zoom-out}
+.lb-img{max-width:92vw;max-height:88vh;object-fit:contain;border-radius:4px}
+.lb-close{position:absolute;top:20px;right:24px;color:#fff;font-size:32px;cursor:pointer;background:none;border:none;opacity:.7;transition:opacity .2s;line-height:1}
+.lb-close:hover{opacity:1}
+.lb-prev,.lb-next{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:44px;cursor:pointer;background:rgba(255,255,255,.08);border:none;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.lb-prev{left:20px}.lb-next{right:20px}
+.lb-prev:hover,.lb-next:hover{background:rgba(196,151,58,.5)}
+.lb-thumbs{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.lb-thumb{width:56px;height:40px;object-fit:cover;cursor:pointer;opacity:.4;border:2px solid transparent;border-radius:4px;transition:all .2s}
+.lb-thumb.on{opacity:1;border-color:var(--gold)}
 @keyframes fi{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 .fin{animation:fi .7s cubic-bezier(0.22,1,0.36,1) forwards}
-@keyframes fadeOnly{from{opacity:0}to{opacity:1}}
-.fade{animation:fadeOnly .5s ease forwards}
-@media(max-width:860px){.dbody{grid-template-columns:1fr}.widget{position:static}.grid{grid-template-columns:1fr}.cgrid{grid-template-columns:repeat(2,1fr)}.navr{gap:12px}}
+@media(max-width:860px){.dbody{grid-template-columns:1fr}.widget{position:static}.grid{grid-template-columns:1fr}.cgrid{grid-template-columns:repeat(2,1fr)}.navr{gap:12px}.stat-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.sec{padding:56px 18px}.nav{padding:0 16px}.ht{font-size:44px}.hbtns{flex-direction:column;align-items:center}.cgrid{grid-template-columns:1fr}}
 `;
-
-interface PriceTier { guests:number; price:number; }
-interface Apt { id:number; name:string; badge_ro:string; badge_en:string; badge_fr:string; badge_it:string; price:number; maxGuests:number; priceTiers:PriceTier[]; desc:Record<string,string>; amenities:string[]; photos:string[]; }
-interface Bk { aptId:number|null; checkin:string|null; checkout:string|null; step:number; }
-interface Guest { name:string; email:string; phone:string; guests:number; }
-interface Booking { id:number; aptId:number|null; aptName:string; checkin:string|null; checkout:string|null; name:string; email:string; phone:string; guests:number; total:number; date:string; }
-interface Contact { phone:string; whatsapp:string; email:string; address:string; }
-
-const SITE_PASS = "Bluebee421993";
 
 export default function BlueBeeApp() {
   const [siteUnlocked, setSiteUnlocked] = useState(() => {
@@ -279,28 +317,22 @@ export default function BlueBeeApp() {
 
   if(!siteUnlocked) return (
     <div style={{minHeight:'100vh',background:'linear-gradient(150deg,#0D1B2A 0%,#1a3a5c 100%)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'Jost,sans-serif'}}>
-      <style>@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Jost:wght@300;400;500&display=swap');</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Jost:wght@300;400;500&display=swap');`}</style>
       <div style={{background:'#fff',borderRadius:22,padding:'50px 44px',width:'100%',maxWidth:360,textAlign:'center',boxShadow:'0 30px 80px rgba(0,0,0,.3)'}}>
-        <div style={{display:'flex',justifyContent:'center',marginBottom:14}}>
-          <BbLogo size={72}/>
-        </div>
+        <div style={{display:'flex',justifyContent:'center',marginBottom:14}}><BbLogo size={72}/></div>
         <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:28,color:'#0D1B2A',marginBottom:5}}>Blue<span style={{color:'#C4973A'}}>Bee</span></div>
         <div style={{fontSize:10,letterSpacing:2,color:'#AFA8A0',textTransform:'uppercase',marginBottom:30}}>Site în construcție</div>
-        <input
-          style={{width:'100%',border:`1.5px solid ${siteErr?'#ef4444':'#E8E0D5'}`,padding:'12px 15px',fontSize:14,outline:'none',marginBottom:10,textAlign:'center',fontFamily:'Jost,sans-serif',borderRadius:9,background:'#FAF7F2'}}
+        <input style={{width:'100%',border:`1.5px solid ${siteErr?'#ef4444':'#E8E0D5'}`,padding:'12px 15px',fontSize:14,outline:'none',marginBottom:10,textAlign:'center',fontFamily:'Jost,sans-serif',borderRadius:9,background:'#FAF7F2'}}
           type="password" placeholder="Parolă" value={sitePass} autoFocus
           onChange={e=>{setSitePass(e.target.value);setSiteErr(false);}}
-          onKeyDown={e=>{if(e.key==='Enter'){if(sitePass===SITE_PASS){localStorage.setItem('bb_site_unlocked','1');setSiteUnlocked(true);}else setSiteErr(true);}}}
-        />
+          onKeyDown={e=>{if(e.key==='Enter'){if(sitePass===SITE_PASS){localStorage.setItem('bb_site_unlocked','1');setSiteUnlocked(true);}else setSiteErr(true);}}}/>
         {siteErr&&<div style={{color:'#ef4444',fontSize:12,marginBottom:8}}>Parolă incorectă</div>}
-        <button
-          style={{background:'linear-gradient(135deg,#C4973A,#D4A94A)',color:'#fff',border:'none',padding:'12px 26px',fontSize:10,letterSpacing:1.5,textTransform:'uppercase',cursor:'pointer',fontFamily:'Jost,sans-serif',borderRadius:22,width:'100%',marginTop:4}}
-          onClick={()=>{if(sitePass===SITE_PASS){localStorage.setItem('bb_site_unlocked','1');setSiteUnlocked(true);}else setSiteErr(true);}}>
-          Intră
-        </button>
+        <button style={{background:'linear-gradient(135deg,#C4973A,#D4A94A)',color:'#fff',border:'none',padding:'12px 26px',fontSize:10,letterSpacing:1.5,textTransform:'uppercase',cursor:'pointer',fontFamily:'Jost,sans-serif',borderRadius:22,width:'100%',marginTop:4}}
+          onClick={()=>{if(sitePass===SITE_PASS){localStorage.setItem('bb_site_unlocked','1');setSiteUnlocked(true);}else setSiteErr(true);}}>Intră</button>
       </div>
     </div>
   );
+
   const [lang,setLang]=useState("ro");
   const [page,setPage]=useState("home");
   const [apts,setApts]=useState<Apt[]>(APTS0);
@@ -314,6 +346,8 @@ export default function BlueBeeApp() {
   const [saved,setSaved]=useState<Record<string,boolean>>({});
   const [galIdx,setGalIdx]=useState<Record<number,number>>({1:0,2:0});
   const [calMo,setCalMo]=useState<[number,number]>(()=>{const d=new Date();return[d.getFullYear(),d.getMonth()];});
+  const [lb,setLb]=useState<{photos:string[],idx:number}|null>(null);
+  const [adminTab,setAdminTab]=useState("dashboard");
 
   const t=TXT[lang];
   const bkApt=bk.aptId?apts.find(a=>a.id===bk.aptId):null;
@@ -330,9 +364,44 @@ export default function BlueBeeApp() {
 
   const saveApt=(id:number,data:Partial<Apt>)=>{const n=apts.map(a=>a.id===id?{...a,...data}:a);setApts(n);lsSet('bb_apts',JSON.stringify(n));setSaved(s=>({...s,[id]:true}));setTimeout(()=>setSaved(s=>({...s,[id]:false})),2500);};
   const saveCnt=(c:Contact)=>{setContact(c);lsSet('bb_cnt',JSON.stringify(c));setSaved(s=>({...s,cnt:true}));setTimeout(()=>setSaved(s=>({...s,cnt:false})),2500);};
-  const confirmBk=()=>{if(!bkApt)return;const nb:Booking={id:Date.now(),aptId:bk.aptId,aptName:bkApt.name,checkin:bk.checkin,checkout:bk.checkout,...guest,total,date:new Date().toISOString()};const nbs=[...bookings,nb];setBookings(nbs);lsSet('bb_bks',JSON.stringify(nbs));setBk(b=>({...b,step:4}));};
-  const isBooked=(aptId:number,ds:string)=>bookings.filter(b=>b.aptId===aptId).some(b=>!!b.checkin&&!!b.checkout&&ds>=b.checkin&&ds<b.checkout);
+  
+  const confirmBk=()=>{
+    if(!bkApt)return;
+    const nb:Booking={id:Date.now(),aptId:bk.aptId,aptName:bkApt.name,checkin:bk.checkin,checkout:bk.checkout,...guest,total,date:new Date().toISOString(),status:'active'};
+    const nbs=[...bookings,nb];
+    setBookings(nbs);
+    lsSet('bb_bks',JSON.stringify(nbs));
+    setBk(b=>({...b,step:4}));
+  };
+
+  const cancelBooking=(id:number)=>{
+    const bkObj=bookings.find(b=>b.id===id);
+    if(!bkObj)return;
+    if(!window.confirm(`Anulezi rezervarea lui ${bkObj.name}?`))return;
+    const nbs=bookings.map(b=>b.id===id?{...b,status:'cancelled'}:b);
+    setBookings(nbs);
+    lsSet('bb_bks',JSON.stringify(nbs));
+    if(bkObj.email){
+      window.open(`mailto:${bkObj.email}?subject=Anulare rezervare BlueBee Apartments&body=Stimate/ă ${bkObj.name},%0A%0ARezerva dumneavoastră la ${bkObj.aptName} pentru perioada ${bkObj.checkin} - ${bkObj.checkout} a fost anulată.%0A%0AVă rugăm să ne contactați pentru detalii.%0A%0ACu stimă,%0AEchipa BlueBee Apartments`);
+    }
+  };
+
+  const isBooked=(aptId:number,ds:string)=>bookings.filter(b=>b.aptId===aptId&&b.status!=='cancelled').some(b=>!!b.checkin&&!!b.checkout&&ds>=b.checkin&&ds<b.checkout);
   const goApts=()=>{setPage('home');setTimeout(()=>document.getElementById('apts')?.scrollIntoView({behavior:'smooth'}),80);};
+  const openLb=(photos:string[],idx:number)=>setLb({photos,idx});
+
+  const Lightbox=()=>{
+    if(!lb)return null;
+    return(<div className="lightbox" onClick={()=>setLb(null)}>
+      <button className="lb-close" onClick={()=>setLb(null)}>✕</button>
+      {lb.photos.length>1&&<button className="lb-prev" onClick={e=>{e.stopPropagation();setLb(l=>l?{...l,idx:(l.idx-1+l.photos.length)%l.photos.length}:null);}}>‹</button>}
+      <img className="lb-img" src={lb.photos[lb.idx]} alt="" onClick={e=>e.stopPropagation()}/>
+      {lb.photos.length>1&&<button className="lb-next" onClick={e=>{e.stopPropagation();setLb(l=>l?{...l,idx:(l.idx+1)%l.photos.length}:null);}}>›</button>}
+      <div className="lb-thumbs" onClick={e=>e.stopPropagation()}>
+        {lb.photos.map((p,i)=><img key={i} src={p} className={`lb-thumb ${i===lb.idx?'on':''}`} alt="" onClick={()=>setLb(l=>l?{...l,idx:i}:null)}/>)}
+      </div>
+    </div>);
+  };
 
   const Calendar=()=>{
     const[y,m]=calMo,days=monthDays(y,m),dows=['Du','Lu','Ma','Mi','Jo','Vi','Sâ'];
@@ -370,7 +439,7 @@ export default function BlueBeeApp() {
   const Modal=()=>{
     if(!bk.step)return null;
     const close=()=>setBk({aptId:null,checkin:null,checkout:null,step:0});
-    return(<div className="overlay" onClick={(e)=>{if(e.target===e.currentTarget)close();}}>
+    return(<div className="overlay" onClick={e=>{if(e.target===e.currentTarget)close();}}>
       <div className="modal fin">
         {bk.step===4?(<div className="success">
           <div style={{fontSize:50,marginBottom:12}}>✅</div>
@@ -385,12 +454,14 @@ export default function BlueBeeApp() {
           {bk.step===1&&(<><Calendar/><div className="mbtns"><button className="bo" onClick={close}>✕</button><button className="bg" disabled={!bk.checkin||!bk.checkout} onClick={()=>setBk(b=>({...b,step:2}))}>{bk.checkin&&bk.checkout?`${nights} ${nights===1?t.night:t.nights} · ${total} RON →`:t.select_dates}</button></div></>)}
           {bk.step===2&&(<>
             <div className="infosumm">{bk.checkin&&bk.checkout&&<><span>{fmtDate(bk.checkin)} → {fmtDate(bk.checkout)}</span><strong>{nights} {nights===1?t.night:t.nights} · {total} RON</strong></>}</div>
-            {(['name','email','phone'] as const).map((k)=>(<div key={k} className="ff"><label>{t[k==='name'?'full_name':k==='email'?'email':'phone']}</label><input type={k==='email'?'email':k==='phone'?'tel':'text'} value={guest[k]} onChange={e=>setGuest(g=>({...g,[k]:e.target.value}))}/></div>))}
+            <div className="ff"><label>Nume și prenume *</label><input type="text" placeholder="Ion Popescu" required value={guest.name} onChange={e=>setGuest(g=>({...g,name:e.target.value}))}/></div>
+            <div className="ff"><label>Telefon * <span style={{color:'var(--gold)'}}>obligatoriu</span></label><input type="tel" placeholder="+40 7XX XXX XXX" required value={guest.phone} onChange={e=>setGuest(g=>({...g,phone:e.target.value}))}/></div>
+            <div className="ff"><label>Email <span style={{color:'var(--gray2)',fontSize:9}}>(opțional)</span></label><input type="email" placeholder="email@exemplu.ro" value={guest.email} onChange={e=>setGuest(g=>({...g,email:e.target.value}))}/></div>
             <div className="ff"><label>{t.guests} (max {bkApt?.maxGuests})</label><input type="number" min={1} max={bkApt?.maxGuests} value={guest.guests} onChange={e=>setGuest(g=>({...g,guests:Number(e.target.value)}))}/></div>
-            <div className="mbtns"><button className="bo" onClick={()=>setBk(b=>({...b,step:1}))}>←</button><button className="bg" disabled={!guest.name||!guest.email} onClick={()=>setBk(b=>({...b,step:3}))}>💳 {t.payment} →</button></div>
+            <div className="mbtns"><button className="bo" onClick={()=>setBk(b=>({...b,step:1}))}>←</button><button className="bg" disabled={!guest.name||!guest.phone} onClick={()=>setBk(b=>({...b,step:3}))}>💳 {t.payment} →</button></div>
           </>)}
           {bk.step===3&&(<>
-            <div className="infosumm"><span>{guest.name}</span><strong>{total} RON</strong></div>
+            <div className="infosumm"><span>{guest.name} · {guest.phone}</span><strong>{total} RON</strong></div>
             <div className="paybox"><div className="paytitle">🔒 {t.payment} — Stripe</div>
               <div className="ff"><label>{t.card_nr}</label><input placeholder="4242 4242 4242 4242"/></div>
               <div className="cardrow"><div className="ff"><label>{t.expiry}</label><input placeholder="MM/AA"/></div><div className="ff"><label>{t.cvc}</label><input placeholder="123"/></div><div className="ff"><label>Total</label><input value={`${total} RON`} readOnly style={{background:'#f0f0f0'}}/></div></div>
@@ -408,7 +479,7 @@ export default function BlueBeeApp() {
     const openBk=()=>{setCalMo([new Date().getFullYear(),new Date().getMonth()]);setBk({aptId:apt.id,checkin:null,checkout:null,step:1});};
     return(<div className="detail fin">
       <div className="gal">
-        <img className="galimg" src={apt.photos[idx]||''} alt={apt.name}/>
+        <img className="galimg" src={apt.photos[idx]||''} alt={apt.name} onClick={()=>openLb(apt.photos,idx)}/>
         <div className="galcnt">{idx+1} / {apt.photos.length}</div>
         {apt.photos.length>1&&<div className="galnav"><button className="galbtn" onClick={()=>setGalIdx(g=>({...g,[apt.id]:(idx-1+apt.photos.length)%apt.photos.length}))}>‹</button><button className="galbtn" onClick={()=>setGalIdx(g=>({...g,[apt.id]:(idx+1)%apt.photos.length}))}>›</button></div>}
         <div className="galthumbs">{apt.photos.map((p,i)=><img key={i} src={p} className={`galthumb ${i===idx?'on':''}`} alt="" onClick={()=>setGalIdx(g=>({...g,[apt.id]:i}))}/>)}</div>
@@ -425,13 +496,10 @@ export default function BlueBeeApp() {
         </div>
         <div>
           <div className="widget">
-            <div className="wprice">{pricePerNight} RON<span> {t.per_night}</span></div>
-            {bkApt&&bkApt.priceTiers&&bkApt.priceTiers.length>0&&(
+            <div className="wprice">{pricePerNight||apt.priceTiers[0]?.price||apt.price} RON<span> {t.per_night}</span></div>
+            {apt.priceTiers&&apt.priceTiers.length>0&&(
               <div style={{fontSize:11,color:'var(--gray)',marginBottom:8,lineHeight:1.7}}>
-                {bkApt.priceTiers.map((tier,i)=>{
-                  const prev=i===0?1:bkApt.priceTiers[i-1].guests+1;
-                  return<div key={i}>{prev===tier.guests?`${prev} pers`:`${prev}-${tier.guests} pers`}: <strong>{tier.price} RON</strong></div>;
-                })}
+                {apt.priceTiers.map((tier,i)=>{const prev=i===0?1:apt.priceTiers[i-1].guests+1;return<div key={i}>{prev===tier.guests?`${prev} pers`:`${prev}-${tier.guests} pers`}: <strong>{tier.price} RON</strong></div>;})}
               </div>
             )}
             <div className="daterow" onClick={openBk}><div className="df"><label>{t.checkin}</label><span>{wBk&&bk.checkin?fmtDate(bk.checkin):'—'}</span></div><div className="df"><label>{t.checkout}</label><span>{wBk&&bk.checkout?fmtDate(bk.checkout):'—'}</span></div></div>
@@ -446,92 +514,241 @@ export default function BlueBeeApp() {
     </div>);
   };
 
+  // Admin Calendar Component
+  const AdminCalendar=({aptId}:{aptId:number})=>{
+    const [y,setY]=useState(new Date().getFullYear());
+    const [m,setM]=useState(new Date().getMonth());
+    const [viewAll,setViewAll]=useState(false);
+    const days=monthDays(y,m),dows=['Du','Lu','Ma','Mi','Jo','Vi','Sâ'];
+    const apt=apts.find(a=>a.id===aptId);
+    
+    if(viewAll){
+      return(<div className="admin-cal">
+        <div className="admin-cal-head">
+          <div className="admin-cal-title">{apt?.name} — {y}</div>
+          <div style={{display:'flex',gap:8,alignItems:'center'}}>
+            <button className="admin-cal-nbtn" onClick={()=>setY(y-1)}>‹</button>
+            <span style={{fontSize:13,color:'var(--gray)'}}>{y}</span>
+            <button className="admin-cal-nbtn" onClick={()=>setY(y+1)}>›</button>
+            <button onClick={()=>setViewAll(false)} style={{padding:'6px 14px',border:'1px solid var(--border)',borderRadius:18,fontSize:11,cursor:'pointer',background:'none',fontFamily:'Jost',color:'var(--navy)'}}>Luna curentă</button>
+          </div>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
+          {Array.from({length:12},(_,mi)=>{
+            const mdays=monthDays(y,mi);
+            return(<div key={mi}>
+              <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:16,color:'var(--navy)',marginBottom:8,textAlign:'center'}}>{MONTHS_SHORT[mi]}</div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:1}}>
+                {['D','L','M','M','J','V','S'].map(d=><div key={d} style={{textAlign:'center',fontSize:8,color:'var(--gray2)',padding:'3px 0'}}>{d}</div>)}
+                {mdays.map((ds,i)=>{
+                  if(!ds)return<div key={`e${i}`}/>;
+                  const occ=isBooked(aptId,ds),past=ds<todayStr(),tod=ds===todayStr();
+                  const d=parseInt(ds.split('-')[2]);
+                  let bg='transparent',color=past?'#d1d5db':'var(--navy)';
+                  if(!past&&occ){bg='rgba(239,68,68,.15)';color='#dc2626';}
+                  else if(!past&&!occ){bg='rgba(34,197,94,.1)';color='#15803d';}
+                  return<div key={ds} style={{textAlign:'center',fontSize:9,padding:'3px 1px',borderRadius:3,background:bg,color,border:tod?'1px solid var(--gold)':'1px solid transparent'}}>{d}</div>;
+                })}
+              </div>
+            </div>);
+          })}
+        </div>
+        <div className="cal-legend" style={{marginTop:20}}>
+          <div className="cal-leg"><div className="cal-dot" style={{background:'rgba(34,197,94,.3)'}}></div><span style={{fontSize:11,color:'var(--gray)'}}>Liber</span></div>
+          <div className="cal-leg"><div className="cal-dot" style={{background:'rgba(239,68,68,.3)'}}></div><span style={{fontSize:11,color:'var(--gray)'}}>Ocupat</span></div>
+        </div>
+      </div>);
+    }
+
+    return(<div className="admin-cal">
+      <div className="admin-cal-head">
+        <div className="admin-cal-title">{apt?.name}</div>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <button className="admin-cal-nbtn" onClick={()=>{let nm=m-1,ny=y;if(nm<0){nm=11;ny--;}setM(nm);setY(ny);}}>‹</button>
+          <span style={{fontSize:13,color:'var(--gray)'}}>{MONTHS[m]} {y}</span>
+          <button className="admin-cal-nbtn" onClick={()=>{let nm=m+1,ny=y;if(nm>11){nm=0;ny++;}setM(nm);setY(ny);}}>›</button>
+          <button onClick={()=>setViewAll(true)} style={{padding:'6px 14px',border:'1px solid var(--border)',borderRadius:18,fontSize:11,cursor:'pointer',background:'none',fontFamily:'Jost',color:'var(--navy)'}}>Vezi tot anul</button>
+        </div>
+      </div>
+      <div className="admin-cal-grid">
+        {dows.map(d=><div key={d} className="admin-cal-dow">{d}</div>)}
+        {days.map((ds,i)=>{
+          if(!ds)return<div key={`e${i}`}/>;
+          const occ=isBooked(aptId,ds),past=ds<todayStr(),tod=ds===todayStr();
+          let cls="admin-day";
+          if(past)cls+=" past";else if(occ)cls+=" occ";else cls+=" free";
+          if(tod)cls+=" tod";
+          const d=parseInt(ds.split('-')[2]);
+          const bkInfo=!past&&occ?bookings.find(b=>b.aptId===aptId&&b.status!=='cancelled'&&!!b.checkin&&!!b.checkout&&ds>=b.checkin&&ds<b.checkout):null;
+          return<div key={ds} className={cls} title={bkInfo?`${bkInfo.name} · ${bkInfo.phone}`:''}>{d}</div>;
+        })}
+      </div>
+      <div className="cal-legend">
+        <div className="cal-leg"><div className="cal-dot" style={{background:'rgba(34,197,94,.4)'}}></div><span style={{fontSize:11,color:'var(--gray)'}}>Liber</span></div>
+        <div className="cal-leg"><div className="cal-dot" style={{background:'rgba(239,68,68,.4)'}}></div><span style={{fontSize:11,color:'var(--gray)'}}>Ocupat</span></div>
+      </div>
+    </div>);
+  };
+
   const Admin=()=>{
-    const[ea,setEa]=useState<Apt[]>(apts.map(a=>({...a,desc:{...a.desc},photos:[...a.photos],amenities:[...a.amenities]})));
-    const[ec,setEc]=useState<Contact>({...contact});
+    const [ea,setEa]=useState<Apt[]>(apts.map(a=>({...a,desc:{...a.desc},photos:[...a.photos],amenities:[...a.amenities]})));
+    const [ec,setEc]=useState<Contact>({...contact});
+    const [bkTab,setBkTab]=useState(1);
+
     if(!adminIn)return(<div className="loginwrap"><div className="loginbox">
       <div style={{display:'flex',justifyContent:'center',marginBottom:14}}><BbLogo size={72}/></div>
       <div className="llogo">Blue<span style={{color:C.gold}}>Bee</span></div>
       <div className="lsub">Administrator</div>
-      <input className="linput" type="password" placeholder="••••••••" value={adminPw} onChange={e=>{setAdminPw(e.target.value);setAdminErr(false);}} onKeyDown={e=>{if(e.key==='Enter'){if(adminPw===ADMIN_PASS)setAdminIn(true);else setAdminErr(true);}}}/>
-      {adminErr&&<div className="lerr">{t.admin_wrong}</div>}
-      <button className="savebtn" style={{width:'100%',marginTop:0}} onClick={()=>{if(adminPw===ADMIN_PASS)setAdminIn(true);else setAdminErr(true);}}>{t.admin_login}</button>
-      <button className="backbtn" style={{marginTop:16,justifyContent:'center',width:'100%'}} onClick={()=>setPage('home')}>{t.back}</button>
+      <input className="linput" type="password" placeholder="••••••••" value={adminPw} autoFocus onChange={e=>{setAdminPw(e.target.value);setAdminErr(false);}} onKeyDown={e=>{if(e.key==='Enter'){if(adminPw===ADMIN_PASS)setAdminIn(true);else setAdminErr(true);}}}/>
+      {adminErr&&<div className="lerr">Parolă incorectă</div>}
+      <button className="savebtn" style={{width:'100%',marginTop:0}} onClick={()=>{if(adminPw===ADMIN_PASS)setAdminIn(true);else setAdminErr(true);}}>Autentificare</button>
+      <button className="backbtn" style={{marginTop:16,justifyContent:'center',width:'100%'}} onClick={()=>setPage('home')}>← Înapoi</button>
     </div></div>);
+
+    const activeBookings=bookings.filter(b=>b.status!=='cancelled');
+    const upcomingBookings=activeBookings.filter(b=>b.checkin&&b.checkin>=todayStr());
+    const totalRevenue=activeBookings.reduce((s,b)=>s+b.total,0);
+
     const upd=(i:number,f:string,v:string|number)=>{const n=[...ea];n[i]={...n[i],[f]:v};setEa(n);};
     const updDesc=(i:number,v:string)=>{const n=[...ea];n[i]={...n[i],desc:{...n[i].desc,ro:v}};setEa(n);};
     const addPh=(i:number)=>{const n=[...ea];n[i]={...n[i],photos:[...n[i].photos,'']};setEa(n);};
     const updPh=(ai:number,pi:number,v:string)=>{const n=[...ea];const p=[...n[ai].photos];p[pi]=v;n[ai]={...n[ai],photos:p};setEa(n);};
     const delPh=(ai:number,pi:number)=>{const n=[...ea];n[ai]={...n[ai],photos:n[ai].photos.filter((_,i)=>i!==pi)};setEa(n);};
     const togAm=(ai:number,k:string)=>{const n=[...ea];const am=n[ai].amenities.includes(k)?n[ai].amenities.filter(a=>a!==k):[...n[ai].amenities,k];n[ai]={...n[ai],amenities:am};setEa(n);};
-    return(<div className="admin"><div className="awrap">
-      <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:28}}>
-        <div><button className="backbtn" onClick={()=>setPage('home')}>{t.back}</button><h1 className="atitle">⚙ {t.admin_title}</h1></div>
-        <button className="savebtn" style={{background:'transparent',color:C.gray,border:`1px solid ${C.border}`}} onClick={()=>{setAdminIn(false);setAdminPw('');setPage('home');}}>{t.admin_logout}</button>
+
+    return(<div className="admin">
+      <div style={{background:'var(--navy)',padding:'0 32px',display:'flex',alignItems:'center',justifyContent:'space-between',height:68}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}} onClick={()=>setPage('home')}>
+          <BbLogo size={38}/>
+          <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:18,color:'#fff'}}>Blue<span style={{color:'var(--gold)'}}>Bee</span> <span style={{color:'rgba(255,255,255,.5)',fontSize:14}}>Admin</span></div>
+        </div>
+        <button className="savebtn" style={{background:'transparent',color:'rgba(255,255,255,.5)',border:'1px solid rgba(255,255,255,.2)',marginTop:0}} onClick={()=>{setAdminIn(false);setAdminPw('');setPage('home');}}>Deconectare</button>
       </div>
-      {ea.map((apt,ai)=>(<div key={apt.id} className="acard">
-        <div className="aaptname">🏠 {apt.name} {saved[apt.id]&&<span style={{fontSize:12,color:'#16a34a',fontFamily:'Jost',fontWeight:400}}>{t.saved}</span>}</div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:13}}>
-          <div className="af"><label>{t.apt_name}</label><input value={apt.name} onChange={e=>upd(ai,'name',e.target.value)}/></div>
-          <div className="af"><label>Max oaspeți</label><input type="number" value={apt.maxGuests} onChange={e=>upd(ai,'maxGuests',Number(e.target.value))}/></div>
-        </div>
-        <div className="af">
-          <label>Prețuri per număr de oaspeți (RON/noapte)</label>
-          {apt.priceTiers&&apt.priceTiers.map((tier,ti)=>{
-            const prev=ti===0?1:apt.priceTiers[ti-1].guests+1;
-            return(<div key={ti} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
-              <span style={{fontSize:12,color:'var(--gray)',minWidth:90}}>{prev===tier.guests?`${prev} pers`:`${prev}–${tier.guests} pers`}:</span>
-              <input type="number" value={tier.price} style={{width:90,border:`1.5px solid ${C.border}`,padding:'6px 10px',fontSize:13,fontFamily:'Jost',outline:'none',borderRadius:8,background:'var(--cream)'}}
-                onChange={e=>{const n=[...ea];const tiers=[...n[ai].priceTiers];tiers[ti]={...tiers[ti],price:Number(e.target.value)};n[ai]={...n[ai],priceTiers:tiers};setEa(n);}}/>
-              <span style={{fontSize:12,color:'var(--gray)'}}>RON</span>
-            </div>);
-          })}
-        </div>
-        <div className="af"><label>{t.description}</label><textarea rows={3} style={{width:'100%',border:`1.5px solid ${C.border}`,padding:'8px 12px',fontFamily:'Jost',fontSize:13,outline:'none',resize:'vertical',borderRadius:8,background:'var(--cream)'}} value={apt.desc.ro} onChange={e=>updDesc(ai,e.target.value)}/></div>
-        <div className="af"><label>{t.amenities_lbl}</label><div className="amtoggle">{ALL_AM.map(k=><div key={k} className={`amt ${apt.amenities.includes(k)?'on':'off'}`} onClick={()=>togAm(ai,k)}>{AM_ICONS[k]} {t[`a_${k}`]||k}</div>)}</div></div>
-        <div className="af"><label>{t.photos}</label>
-          <div className="photolist">{apt.photos.map((url,pi)=>(<div key={pi} className="prow">{url&&<img src={url} alt="" onError={(e)=>{(e.target as HTMLImageElement).style.display='none'}}/>}<input value={url} placeholder={t.photo_url} onChange={e=>updPh(ai,pi,e.target.value)}/><button className="pdel" onClick={()=>delPh(ai,pi)}>×</button></div>))}</div>
-          <button className="addphoto" onClick={()=>addPh(ai)}>{t.add_photo}</button>
-        </div>
-        <button className="savebtn" onClick={()=>saveApt(apt.id,{name:apt.name,price:apt.priceTiers[0]?.price||apt.price,maxGuests:apt.maxGuests,priceTiers:apt.priceTiers,desc:{...apts[ai].desc,ro:apt.desc.ro},amenities:apt.amenities,photos:apt.photos})}>{saved[apt.id]?t.saved:t.save}</button>
-      </div>))}
-      <div className="acard">
-        <div className="aaptname">📍 {t.contact_edit} {saved['cnt']&&<span style={{fontSize:12,color:'#16a34a',fontFamily:'Jost',fontWeight:400}}>{t.saved}</span>}</div>
-        {(['phone','whatsapp','email','address'] as const).map((k)=>(<div key={k} className="af"><label>{t[k==='phone'?'phone_lbl':k==='whatsapp'?'wa_lbl':k==='email'?'email_lbl':'addr_lbl']}</label><input value={ec[k]||''} onChange={e=>setEc(c=>({...c,[k]:e.target.value}))}/></div>))}
-        <button className="savebtn" onClick={()=>saveCnt(ec)}>{saved['cnt']?t.saved:t.save}</button>
+      <div className="admin-nav">
+        {[['dashboard','📊 Dashboard'],['calendar','📅 Calendar'],['bookings','📋 Rezervări'],['apartments','🏠 Apartamente'],['settings','⚙️ Setări']].map(([id,label])=>(
+          <button key={id} className={`admin-tab ${adminTab===id?'on':'off'}`} onClick={()=>setAdminTab(id)}>{label}</button>
+        ))}
       </div>
-      <div className="acard">
-        <div className="aaptname">🔄 Sincronizare Calendar iCal</div>
-        <p style={{fontSize:12,color:'var(--gray)',marginBottom:18,lineHeight:1.7}}>
-          Adaugă link-urile iCal de pe Booking.com și Travelminit pentru a evita dublarea rezervărilor. 
-          Le găsești în <strong>setările calendarului</strong> de pe fiecare platformă.
-        </p>
-        {ea.map((apt,ai)=>(<div key={apt.id} style={{marginBottom:20,padding:'16px',background:'var(--cream)',borderRadius:12}}>
-          <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:18,color:'var(--navy)',marginBottom:12}}>🏠 {apt.name}</div>
-          <div className="af">
-            <label>📅 Booking.com — link iCal export</label>
-            <input value={(apt as any).ical_booking||''} placeholder="https://admin.booking.com/hotel/hoteladmin/ical.html?..." onChange={e=>{const n=[...ea];(n[ai] as any).ical_booking=e.target.value;setEa(n);}}/>
+
+      <div className="awrap">
+        {adminTab==='dashboard'&&(<div className="fin">
+          <div className="stat-grid">
+            <div className="stat"><div className="stat-num">{activeBookings.length}</div><div className="stat-lbl">Rezervări totale</div></div>
+            <div className="stat"><div className="stat-num">{upcomingBookings.length}</div><div className="stat-lbl">Viitoare</div></div>
+            <div className="stat"><div className="stat-num">{totalRevenue}</div><div className="stat-lbl">Venit total (RON)</div></div>
+            <div className="stat"><div className="stat-num">{bookings.filter(b=>b.status==='cancelled').length}</div><div className="stat-lbl">Anulate</div></div>
           </div>
-          <div className="af">
-            <label>📅 Travelminit — link iCal export</label>
-            <input value={(apt as any).ical_travelminit||''} placeholder="https://www.travelminit.ro/ical/..." onChange={e=>{const n=[...ea];(n[ai] as any).ical_travelminit=e.target.value;setEa(n);}}/>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+            <AdminCalendar aptId={1}/>
+            <AdminCalendar aptId={2}/>
           </div>
-          <button className="savebtn" onClick={()=>{saveApt(apt.id,{...(apt as any),ical_booking:(apt as any).ical_booking,ical_travelminit:(apt as any).ical_travelminit});}}>
-            Salvează linkuri iCal
-          </button>
-        </div>))}
-        <div style={{padding:'14px',background:'#f0f9ff',border:'1px solid #bae6fd',borderRadius:10,fontSize:12,color:'#0369a1',lineHeight:1.7}}>
-          <strong>Cum găsești linkul iCal pe Booking.com:</strong><br/>
-          Extranet Booking → Calendar → Sincronizare → Export calendar → Copiază link<br/><br/>
-          <strong>Cum găsești linkul iCal pe Travelminit:</strong><br/>
-          Cont proprietar → Calendar → Sincronizare calendar → Export iCal → Copiază link
-        </div>
+          {upcomingBookings.length>0&&(<div className="acard" style={{marginTop:20}}>
+            <div className="aaptname">🔔 Următoarele rezervări</div>
+            {upcomingBookings.slice(0,5).map(b=>(
+              <div key={b.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 0',borderBottom:'1px solid var(--border)'}}>
+                <div><strong style={{fontSize:14}}>{b.name}</strong><div style={{fontSize:12,color:'var(--gray)'}}>{b.aptName} · {b.checkin} → {b.checkout}</div></div>
+                <div style={{textAlign:'right'}}><div style={{fontFamily:'Cormorant Garamond,serif',fontSize:20}}>{b.total} RON</div><div style={{fontSize:11,color:'var(--gray)'}}>{b.phone}</div></div>
+              </div>
+            ))}
+          </div>)}
+        </div>)}
+
+        {adminTab==='calendar'&&(<div className="fin">
+          <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:32,color:'var(--navy)',marginBottom:24}}>📅 Calendar Disponibilitate</h2>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24}}>
+            <AdminCalendar aptId={1}/>
+            <AdminCalendar aptId={2}/>
+          </div>
+        </div>)}
+
+        {adminTab==='bookings'&&(<div className="fin">
+          <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:32,color:'var(--navy)',marginBottom:20}}>📋 Rezervări</h2>
+          <div className="bk-tabs">
+            {apts.map(a=><button key={a.id} className={`bk-tab ${bkTab===a.id?'on':'off'}`} onClick={()=>setBkTab(a.id)}>{a.name} ({bookings.filter(b=>b.aptId===a.id&&b.status!=='cancelled').length})</button>)}
+          </div>
+          {bookings.filter(b=>b.aptId===bkTab).length===0?
+            <div className="acard"><p style={{color:'var(--gray)',fontSize:13}}>Nu există rezervări pentru acest apartament.</p></div>:
+            bookings.filter(b=>b.aptId===bkTab).sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()).map(b=>(
+              <div key={b.id} className={`bk-card ${b.status==='cancelled'?'cancelled':''}`}>
+                <div>
+                  <div className="bk-name">{b.name}</div>
+                  <div className="bk-info">
+                    <div>📞 <strong>{b.phone}</strong></div>
+                    {b.email&&<div>✉️ {b.email}</div>}
+                    <div>👥 {b.guests} {b.guests===1?'oaspete':'oaspeți'}</div>
+                    <div style={{fontSize:11,color:'var(--gray2)',marginTop:4}}>Rezervat: {new Date(b.date).toLocaleDateString('ro-RO')}</div>
+                  </div>
+                  <div className="bk-dates">
+                    <span>📅 <strong>{t.checkin}:</strong> {b.checkin}</span>
+                    <span>📅 <strong>{t.checkout}:</strong> {b.checkout}</span>
+                    <span>🌙 {b.checkin&&b.checkout?diffDays(b.checkin,b.checkout):0} nopți</span>
+                  </div>
+                </div>
+                <div className="bk-actions">
+                  <div className="bk-total">{b.total} RON</div>
+                  <span className={`bk-status ${b.status==='cancelled'?'cancelled':'active'}`}>{b.status==='cancelled'?'Anulat':'Activ'}</span>
+                  {b.status!=='cancelled'&&<button className="bk-cancel" onClick={()=>cancelBooking(b.id)}>✕ Anulează</button>}
+                  {b.phone&&<a href={`https://wa.me/${b.phone.replace(/[^0-9]/g,'')}`} target="_blank" rel="noreferrer" style={{fontSize:11,color:'#25D366',textDecoration:'none',padding:'6px 14px',border:'1px solid #25D366',borderRadius:18}}>💬 WhatsApp</a>}
+                </div>
+              </div>
+            ))
+          }
+        </div>)}
+
+        {adminTab==='apartments'&&(<div className="fin">
+          <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:32,color:'var(--navy)',marginBottom:20}}>🏠 Apartamente</h2>
+          {ea.map((apt,ai)=>(<div key={apt.id} className="acard">
+            <div className="aaptname">🏠 {apt.name} {saved[apt.id]&&<span style={{fontSize:12,color:'#16a34a',fontFamily:'Jost',fontWeight:400}}>✓ Salvat!</span>}</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:13}}>
+              <div className="af"><label>Nume apartament</label><input value={apt.name} onChange={e=>upd(ai,'name',e.target.value)}/></div>
+              <div className="af"><label>Max oaspeți</label><input type="number" value={apt.maxGuests} onChange={e=>upd(ai,'maxGuests',Number(e.target.value))}/></div>
+            </div>
+            <div className="af">
+              <label>Prețuri per număr de oaspeți (RON/noapte)</label>
+              {apt.priceTiers&&apt.priceTiers.map((tier,ti)=>{
+                const prev=ti===0?1:apt.priceTiers[ti-1].guests+1;
+                return(<div key={ti} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+                  <span style={{fontSize:12,color:'var(--gray)',minWidth:90}}>{prev===tier.guests?`${prev} pers`:`${prev}–${tier.guests} pers`}:</span>
+                  <input type="number" value={tier.price} style={{width:90,border:`1.5px solid ${C.border}`,padding:'6px 10px',fontSize:13,fontFamily:'Jost',outline:'none',borderRadius:8,background:'var(--cream)'}}
+                    onChange={e=>{const n=[...ea];const tiers=[...n[ai].priceTiers];tiers[ti]={...tiers[ti],price:Number(e.target.value)};n[ai]={...n[ai],priceTiers:tiers};setEa(n);}}/>
+                  <span style={{fontSize:12,color:'var(--gray)'}}>RON</span>
+                </div>);
+              })}
+            </div>
+            <div className="af"><label>Descriere (RO)</label><textarea rows={3} style={{width:'100%',border:`1.5px solid ${C.border}`,padding:'8px 12px',fontFamily:'Jost',fontSize:13,outline:'none',resize:'vertical',borderRadius:8,background:'var(--cream)'}} value={apt.desc.ro} onChange={e=>updDesc(ai,e.target.value)}/></div>
+            <div className="af"><label>Facilități</label><div className="amtoggle">{ALL_AM.map(k=><div key={k} className={`amt ${apt.amenities.includes(k)?'on':'off'}`} onClick={()=>togAm(ai,k)}>{AM_ICONS[k]} {TXT.ro[`a_${k}`]||k}</div>)}</div></div>
+            <div className="af"><label>Fotografii</label>
+              <div className="photolist">{apt.photos.map((url,pi)=>(<div key={pi} className="prow">{url&&<img src={url} alt="" onError={e=>{(e.target as HTMLImageElement).style.display='none'}}/>}<input value={url} placeholder="URL fotografie..." onChange={e=>updPh(ai,pi,e.target.value)}/><button className="pdel" onClick={()=>delPh(ai,pi)}>×</button></div>))}</div>
+              <button className="addphoto" onClick={()=>addPh(ai)}>+ Adaugă fotografie</button>
+            </div>
+            <button className="savebtn" onClick={()=>saveApt(apt.id,{name:apt.name,price:apt.priceTiers[0]?.price||apt.price,maxGuests:apt.maxGuests,priceTiers:apt.priceTiers,desc:{...apts[ai].desc,ro:apt.desc.ro},amenities:apt.amenities,photos:apt.photos})}>{saved[apt.id]?'✓ Salvat!':'Salvează'}</button>
+          </div>))}
+        </div>)}
+
+        {adminTab==='settings'&&(<div className="fin">
+          <h2 style={{fontFamily:'Cormorant Garamond,serif',fontSize:32,color:'var(--navy)',marginBottom:20}}>⚙️ Setări</h2>
+          <div className="acard">
+            <div className="aaptname">📍 Informații Contact {saved['cnt']&&<span style={{fontSize:12,color:'#16a34a',fontFamily:'Jost',fontWeight:400}}>✓ Salvat!</span>}</div>
+            {(['phone','whatsapp','email','address'] as const).map(k=>(<div key={k} className="af"><label>{k==='phone'?'Telefon':k==='whatsapp'?'WhatsApp':k==='email'?'Email':'Adresă'}</label><input value={ec[k]||''} onChange={e=>setEc(c=>({...c,[k]:e.target.value}))}/></div>))}
+            <button className="savebtn" onClick={()=>saveCnt(ec)}>{saved['cnt']?'✓ Salvat!':'Salvează'}</button>
+          </div>
+          <div className="acard">
+            <div className="aaptname">🔄 Sincronizare iCal</div>
+            <p style={{fontSize:12,color:'var(--gray)',marginBottom:18,lineHeight:1.7}}>Adaugă link-urile iCal de pe Booking.com și Travelminit pentru a evita dublarea rezervărilor.</p>
+            {ea.map((apt,ai)=>(<div key={apt.id} style={{marginBottom:20,padding:'16px',background:'var(--cream)',borderRadius:12}}>
+              <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:18,color:'var(--navy)',marginBottom:12}}>🏠 {apt.name}</div>
+              <div className="af"><label>📅 Booking.com — link iCal</label><input value={apt.ical_booking||''} placeholder="https://admin.booking.com/..." onChange={e=>{const n=[...ea];n[ai]={...n[ai],ical_booking:e.target.value};setEa(n);}}/></div>
+              <div className="af"><label>📅 Travelminit — link iCal</label><input value={apt.ical_travelminit||''} placeholder="https://www.travelminit.ro/ical/..." onChange={e=>{const n=[...ea];n[ai]={...n[ai],ical_travelminit:e.target.value};setEa(n);}}/></div>
+              <button className="savebtn" onClick={()=>saveApt(apt.id,{ical_booking:apt.ical_booking,ical_travelminit:apt.ical_travelminit})}>Salvează linkuri iCal</button>
+            </div>))}
+            <div style={{padding:'14px',background:'#f0f9ff',border:'1px solid #bae6fd',borderRadius:10,fontSize:12,color:'#0369a1',lineHeight:1.7}}>
+              <strong>Booking.com:</strong> Extranet → Calendar → Sincronizare → Export calendar<br/>
+              <strong>Travelminit:</strong> Cont proprietar → Calendar → Export iCal
+            </div>
+          </div>
+        </div>)}
       </div>
-      <div className="acard">
-        <div className="aaptname">📋 {t.bookings_list}</div>
-        {bookings.length===0?<p style={{color:C.gray,fontSize:13}}>{t.no_bookings}</p>:<div style={{overflowX:'auto'}}><table className="btable"><thead><tr><th>#</th><th>Apt</th><th>Check-in</th><th>Check-out</th><th>Oaspete</th><th>Email</th><th>Total</th></tr></thead><tbody>{bookings.map((b,i)=><tr key={b.id}><td style={{color:C.gray}}>{i+1}</td><td><strong>{b.aptName}</strong></td><td>{b.checkin}</td><td>{b.checkout}</td><td>{b.name}</td><td style={{color:C.gray}}>{b.email}</td><td><strong>{b.total} RON</strong></td></tr>)}</tbody></table></div>}
-      </div>
-    </div></div>);
+    </div>);
   };
 
   return(<div className="bb">
@@ -566,7 +783,11 @@ export default function BlueBeeApp() {
           {apts.map(apt=>{
             const badge=(apt as unknown as Record<string,string>)[`badge_${lang}`]||apt.badge_ro,desc=apt.desc[lang]||apt.desc.ro;
             return(<div key={apt.id} className="card">
-              <div className="cimgw"><img className="cimg" src={apt.photos[0]||''} alt={apt.name}/><div className="cbadge">{badge}</div></div>
+              <div className="cimgw">
+                <img className="cimg" src={apt.photos[0]||''} alt={apt.name} onClick={e=>{e.stopPropagation();openLb(apt.photos,0);}}/>
+                <div className="cbadge">{badge}</div>
+                {apt.photos.length>1&&<button className="cimgw-btn" onClick={e=>{e.stopPropagation();openLb(apt.photos,0);}}>📷 {apt.photos.length} foto</button>}
+              </div>
               <div className="cbody">
                 <h3 className="cname">{apt.name}</h3>
                 <p className="cdesc">{desc.substring(0,128)}...</p>
@@ -589,34 +810,25 @@ export default function BlueBeeApp() {
         <div className="cgrid" style={{gridTemplateColumns:'repeat(4,1fr)'}}>
           <div className="citem" onClick={()=>window.open(`tel:${contact.phone}`)}>
             <div className="cicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" fill="#C4973A"/></svg></div>
-            <div className="clbl">{t.phone_lbl}</div>
-            <div className="cval"><a href={`tel:${contact.phone}`}>{contact.phone}</a></div>
+            <div className="clbl">{t.phone_lbl}</div><div className="cval"><a href={`tel:${contact.phone}`}>{contact.phone}</a></div>
           </div>
           <div className="citem" onClick={()=>window.open(`https://wa.me/${contact.whatsapp.replace(/[^0-9]/g,'')}`)}>
             <div className="cicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.6 1.4 5.1L2 22l5.1-1.4C8.6 21.5 10.3 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm5 13.9c-.2.6-1.2 1.1-1.7 1.2-.4.1-.9.1-1.4-.1-.3-.1-.7-.2-1.2-.5-2.1-.9-3.5-3-3.6-3.1-.1-.2-.9-1.2-.9-2.3 0-1.1.6-1.6.8-1.9.2-.2.5-.3.6-.3h.5c.2 0 .3 0 .5.4l.6 1.5c.1.2.1.3 0 .5l-.3.4-.3.4c-.1.1-.2.3-.1.5.1.2.6 1 1.3 1.6.9.8 1.6 1 1.9 1.1.2.1.4 0 .5-.1l.7-.8c.1-.2.3-.2.5-.1l1.6.8c.2.1.3.2.3.3 0 .1.1.5-.1 1.1z" fill="#C4973A"/></svg></div>
-            <div className="clbl">WhatsApp</div>
-            <div className="cval" style={{color:'var(--gold)'}}>{contact.whatsapp}</div>
+            <div className="clbl">WhatsApp</div><div className="cval" style={{color:'var(--gold)'}}>{contact.whatsapp}</div>
           </div>
           <div className="citem" onClick={()=>window.open(`mailto:${contact.email}`)}>
             <div className="cicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="#C4973A"/></svg></div>
-            <div className="clbl">{t.email_lbl}</div>
-            <div className="cval"><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
+            <div className="clbl">{t.email_lbl}</div><div className="cval"><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
           </div>
           <div className="citem">
             <div className="cicon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z" fill="#C4973A"/></svg></div>
-            <div className="clbl">{t.addr_lbl}</div>
-            <div className="cval">{contact.address}</div>
+            <div className="clbl">{t.addr_lbl}</div><div className="cval">{contact.address}</div>
           </div>
         </div>
         <div style={{marginTop:44,maxWidth:1060,margin:'44px auto 0',borderRadius:18,overflow:'hidden',boxShadow:'0 8px 40px rgba(0,0,0,.3)',position:'relative'}}>
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2848.5!2d23.1893889!3d45.8382932!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x474e9b2a75312d89%3A0x1f8b3e3e43f8302e!2sBulevardul+Eroilor%2C+Or%C4%83%C8%99tie!5e0!3m2!1sro!2sro!4v1"
-            width="100%" height="360" style={{border:0,display:'block',filter:'grayscale(15%) contrast(1.05)'}}
-            allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-          />
-          <a
-            href="https://maps.google.com/?q=45.8382932,23.1893889"
-            target="_blank" rel="noopener noreferrer"
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2848.5!2d23.1893889!3d45.8382932!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x474e9b2a75312d89%3A0x1f8b3e3e43f8302e!2sBulevardul+Eroilor%2C+Or%C4%83%C8%99tie!5e0!3m2!1sro!2sro!4v1"
+            width="100%" height="360" style={{border:0,display:'block',filter:'grayscale(15%) contrast(1.05)'}} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"/>
+          <a href="https://maps.google.com/?q=45.8382932,23.1893889" target="_blank" rel="noopener noreferrer"
             style={{position:'absolute',bottom:16,right:16,background:'linear-gradient(135deg,#C4973A,#D4A94A)',color:'#fff',padding:'10px 20px',borderRadius:24,fontSize:11,letterSpacing:1.5,textTransform:'uppercase',textDecoration:'none',fontFamily:'Jost,sans-serif',fontWeight:500,boxShadow:'0 4px 16px rgba(196,151,58,.4)',display:'flex',alignItems:'center',gap:7}}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/></svg>
             Deschide în Google Maps
@@ -626,16 +838,11 @@ export default function BlueBeeApp() {
     </div>}
     {page==='apt1'&&<div className="fin"><Detail apt={apts[0]}/></div>}
     {page==='apt2'&&<div className="fin"><Detail apt={apts[1]}/></div>}
-    {page==='admin'&&<div className="fin"><Admin/></div>}
+    {page==='admin'&&<Admin/>}
     {bk.step>0&&<Modal/>}
+    {lb&&<Lightbox/>}
     {page!=='admin'&&<footer className="footer">
-      <div className="flogo">
-        <BbLogo size={38}/>
-        <div style={{fontFamily:'Cormorant Garamond,serif',fontSize:19,fontWeight:500,color:'#fff',lineHeight:1.1}}>
-          Blue<span style={{color:'var(--gold)'}}>Bee</span>
-          <span style={{fontSize:7,letterSpacing:3,textTransform:'uppercase',color:'rgba(196,151,58,.65)',display:'block'}}>apartments</span>
-        </div>
-      </div>
+      <div className="flogo"><BbLogo size={38}/><div style={{fontFamily:'Cormorant Garamond,serif',fontSize:19,fontWeight:500,color:'#fff',lineHeight:1.1}}>Blue<span style={{color:'var(--gold)'}}>Bee</span><span style={{fontSize:7,letterSpacing:3,textTransform:'uppercase',color:'rgba(196,151,58,.65)',display:'block'}}>apartments</span></div></div>
       <div className="ftxt">© {new Date().getFullYear()} BlueBee Apartments</div>
       <div className="ftxt" style={{fontSize:9,letterSpacing:1,opacity:.3}}>All rights reserved</div>
     </footer>}
